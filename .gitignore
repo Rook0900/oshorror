@@ -4,9 +4,15 @@ node_modules/
 
 # Build outputs
 dist/
+**/dist/
 build/
+**/build/
 .next/
 out/
+
+# Gradle
+.gradle/
+**/.gradle/
 
 # Environment variables
 .env
