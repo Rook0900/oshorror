@@ -16,7 +16,7 @@ body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
-  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
 }
 
 .app-root {
@@ -144,19 +144,19 @@ body {
 .window-content {
   padding: 12px;
   color: #ccc;
-  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 메모장 창 — pre 태그 기본 monospace 폰트를 반드시 !important로 덮어써야 함 */
 .note-window .note-text {
-  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+  font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
   font-size: 13px !important;
   line-height: 1.9;
-  color: #aaffaa;
+  color: #111111;
   white-space: pre-wrap;
-  background: #111;
+  background: #e8e8e8;
   padding: 10px;
-  border: 1px solid #333;
+  border: 1px solid #bbb;
   min-height: 150px;
 }
 

@@ -4,13 +4,7 @@ import { useDoubleClick } from '../../hooks/useDoubleClick'
 // 간단한 픽셀아트 SVG 스프라이트
 const SPRITES = {
   note: (
-    <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
-      <rect width="8" height="8" fill="#2a2a4a"/>
-      <rect x="1" y="1" width="6" height="6" fill="#3a3a6a"/>
-      <rect x="2" y="2" width="4" height="1" fill="#aaaaff"/>
-      <rect x="2" y="4" width="4" height="1" fill="#aaaaff"/>
-      <rect x="2" y="6" width="3" height="1" fill="#6666aa"/>
-    </svg>
+    <img src="/document_icon.svg" width="32" height="32" style={{ imageRendering: 'pixelated' }} />
   ),
   file: (
     <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
@@ -30,6 +24,9 @@ const SPRITES = {
       <rect x="4" y="3" width="1" height="2" fill="#44ff44"/>
       <rect x="5" y="4" width="1" height="1" fill="#44ff44"/>
     </svg>
+  ),
+  folder: (
+    <img src="/folder_icon.svg" width="32" height="32" style={{ imageRendering: 'pixelated' }} />
   ),
   prog_locked: (
     <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>

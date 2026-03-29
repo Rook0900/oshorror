@@ -1,21 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function ConnectWindow({ onDownloadComplete }) {
   const [progress, setProgress] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ivRef = useRef(null)
 
   useEffect(() => {
-    const iv = setInterval(() => {
+    if (!started) return
+    ivRef.current = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
-          clearInterval(iv)
+          clearInterval(ivRef.current)
           setTimeout(onDownloadComplete, 500)
           return 100
         }
         return Math.min(100, prev + Math.random() * 4 + 1.5)
       })
     }, 80)
-    return () => clearInterval(iv)
-  }, [])
+    return () => clearInterval(ivRef.current)
+  }, [started])
 
   return (
     <div style={{
@@ -39,12 +42,12 @@ export default function ConnectWindow({ onDownloadComplete }) {
       </div>
 
       <div style={{ padding: '16px 14px' }}>
-        <div style={{
-          fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
-          fontSize: '12px', color: '#aaaacc',
-          marginBottom: '10px',
-        }}>
-          파일 다운로드 중...
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <img src="/folder_icon.svg" width="32" height="32" />
+          <span style={{
+            fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
+            fontSize: '12px', color: '#aaaacc',
+          }}>{started ? '파일 다운로드 중...' : '파일 수신 대기 중'}</span>
         </div>
 
         <div style={{ height: '6px', background: '#111', borderRadius: '3px', overflow: 'hidden' }}>
@@ -63,8 +66,27 @@ export default function ConnectWindow({ onDownloadComplete }) {
           fontFamily: "monospace", fontSize: '10px', color: '#445566',
         }}>
           <span>{Math.floor(progress)}%</span>
-          <span>{progress >= 100 ? '완료' : '5개 파일 처리 중'}</span>
+          <span>{progress >= 100 ? '완료' : started ? '5개 파일 처리 중' : '대기'}</span>
         </div>
+
+        {!started && (
+          <button
+            onClick={() => setStarted(true)}
+            style={{
+              marginTop: '12px',
+              width: '100%',
+              padding: '5px 0',
+              background: '#1a1a3a',
+              border: '1px solid #3a3a6a',
+              color: '#aaaaff',
+              fontFamily: 'monospace',
+              fontSize: '11px',
+              cursor: 'pointer',
+            }}
+          >
+            다운로드
+          </button>
+        )}
       </div>
     </div>
   )

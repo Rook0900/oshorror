@@ -31,6 +31,9 @@ export const useGameStore = create((set, get) => ({
     },
   },
 
+  circuitBoxes: [0, 0, 0],
+  setCircuitBoxes: (boxes) => set({ circuitBoxes: boxes }),
+
   openWindow: (windowId) =>
     set((state) => ({
       openWindows: state.openWindows.includes(windowId)

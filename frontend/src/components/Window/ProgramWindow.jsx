@@ -45,7 +45,7 @@ function ConnectFileIcon({ onDoubleClick }) {
 }
 
 // 설치된 파일 아이콘
-function InstalledFileIcon({ name, solved, onClick }) {
+function InstalledFileIcon({ name, index, solved, onClick }) {
   return (
     <div onClick={onClick}
       style={{ display:'flex', flexDirection:'column', alignItems:'center',
@@ -54,13 +54,7 @@ function InstalledFileIcon({ name, solved, onClick }) {
       onMouseEnter={e => { if (!solved) e.currentTarget.style.borderColor='rgba(255,255,255,0.2)' }}
       onMouseLeave={e => e.currentTarget.style.borderColor='transparent'}
     >
-      <svg width="28" height="28" viewBox="0 0 8 8" style={{ imageRendering:'pixelated' }}>
-        <rect width="8" height="8" fill="#0d0d1a" />
-        <rect x="1" y="2" width="5" height="5" fill={solved ? '#1a3a1a' : '#2a2a4a'} />
-        <rect x="1" y="1" width="3" height="2" fill={solved ? '#44aa44' : '#4444aa'} />
-        <rect x="4" y="1" width="2" height="1" fill={solved ? '#44aa44' : '#4444aa'} />
-        <rect x="2" y="4" width="3" height="1" fill={solved ? '#88ff88' : '#8888ff'} />
-      </svg>
+      <img src={`/piece_${index + 1}.svg`} width="48" height="48" style={{ imageRendering:'pixelated' }} />
       <span style={{
         fontFamily:"'Consolas','Courier New',monospace",
         fontSize:'7px', color: solved ? '#448844' : '#8888cc',
@@ -80,9 +74,14 @@ export default function ProgramWindow({ obj, stageId }) {
   const centralDownloaded   = useGameStore(s => s.centralDownloaded)
   const setCentralDownloaded = useGameStore(s => s.setCentralDownloaded)
 
+  const closeWindow     = useGameStore(s => s.closeWindow)
   const unlocked        = isUnlocked(stageId, obj.objId)
   const isCentralkeeper = (stageId === 1 || stageId === 3) && obj.objId === 'PROG_01'
   const isErrorProg     = (stageId === 1 || stageId === 3) && obj.objId === 'PROG_02'
+
+  useEffect(() => {
+    if (isCentralkeeper && !unlocked) closeWindow(obj.objId)
+  }, [isCentralkeeper, unlocked])
 
   const [connectOpen, setConnectOpen] = useState(false)
   // 파일별 개별 열림 상태 (5개)
@@ -128,23 +127,8 @@ export default function ProgramWindow({ obj, stageId }) {
     )
   }
 
-  // ── centralkeeper: 잠금 중 ──
-  if (isCentralkeeper && !unlocked) {
-    return (
-      <WindowFrame title="centralkeeper" windowId={obj.objId} initialPos={{ x: 300, y: 180 }}>
-        <div className="program-window">
-          <div className="program-content" style={{ color:'#44ffaa', fontSize:'12px', lineHeight:'2.2', textAlign:'left' }}>
-            CENTRAL KEEPER v0.1<br />
-            ─────────────────<br />
-            시스템 이상 감지 중...<br />
-            [■□□□□□] 12%<br />
-            회로 흐름 불안정<br />
-            전원 복구 대기 중
-          </div>
-        </div>
-      </WindowFrame>
-    )
-  }
+  // ── centralkeeper: 잠금 중 → 열지 않음 ──
+  if (isCentralkeeper && !unlocked) return null
 
   // ── centralkeeper: 잠금 해제, 파일 설치 전 ──
   if (isCentralkeeper && unlocked && !downloadDone) {
@@ -152,14 +136,6 @@ export default function ProgramWindow({ obj, stageId }) {
       <>
         <WindowFrame title="centralkeeper" windowId={obj.objId} initialPos={{ x: 300, y: 180 }}>
           <div className="program-window">
-            <div className="program-content" style={{ color:'#44ffaa', fontSize:'12px', lineHeight:'2.2', textAlign:'left' }}>
-              CENTRAL KEEPER v0.1<br />
-              ─────────────────<br />
-              전원 복구 완료<br />
-              [██████] 100%<br />
-              <br />
-              연결 대기 중...
-            </div>
             <div style={{ borderTop:'1px solid #333', padding:'8px', marginTop:'4px' }}>
               <ConnectFileIcon onDoubleClick={() => setConnectOpen(true)} />
             </div>
@@ -201,6 +177,7 @@ export default function ProgramWindow({ obj, stageId }) {
                 <InstalledFileIcon
                   key={i}
                   name={name}
+                  index={i}
                   solved={solved}
                   onClick={() => { if (!solved) openFile(i) }}
                 />

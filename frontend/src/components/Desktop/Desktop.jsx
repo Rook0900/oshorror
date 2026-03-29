@@ -13,9 +13,9 @@ import { useStage } from '../../hooks/useStage'
 const STAGE_FALLBACK = {
   1: {
     objects: [
-      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '노트.txt', spriteKey: 'note' },
-      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 200, label: 'centralkeeper', spriteKey: 'file' },
-      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: 'interactive', spriteKey: 'file' },
+      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '안내문.txt', spriteKey: 'note' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 200, label: 'centralkeeper', spriteKey: 'folder' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: 'interactive', spriteKey: 'folder' },
       { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 200, label: '중앙관리장치.exe', spriteKey: 'prog' },
     ],
     bgColor: '#0d0d1a',

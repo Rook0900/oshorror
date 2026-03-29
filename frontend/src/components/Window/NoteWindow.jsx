@@ -5,8 +5,18 @@ import { getHint } from '../../api/stageApi'
 // 서버 오류 시 사용할 fallback 힌트
 const FALLBACK_HINTS = {
   1: {
-    NOTE_01: `벽 속 깊은 곳에서 들리지 않는 흐름이 꿈틀거린다.
-그 길을 따라가면, 어둠을 찢고 빛이 깨어날 것이다.`,
+    NOTE_01: `본 기기를 통해 중앙관리장치에 접근할 수 있으며,
+바탕화면에 위치한 interactive 파일은 접근 상태를 제어하는 역할을 합니다.
+
+해당 파일을 실행하면 시스템의 중심 관리 기능이 자동으로 활성화되어
+전체 흐름을 안정적으로 조율합니다.
+
+사용자는 매달 중요 설비의 연결 상태를 검토해야 하며,
+필요 시 제공된 주소값을 참고하여 관리 절차를 진행하시기 바랍니다.
+
+중요 설비 주소값:
+unknown_888.exe, Luna
+bolt, belle`,
   },
   2: {
     NOTE_01: `[파일1 힌트]
@@ -52,7 +62,7 @@ export default function NoteWindow({ obj, stageId }) {
       initialPos={{ x: 250, y: 120 }}
     >
       <div className="note-window">
-        <div className="note-text">
+        <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif" }}>
           {text}
         </div>
       </div>
