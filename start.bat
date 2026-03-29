@@ -62,7 +62,7 @@ if not exist "%FRONTEND%\node_modules" (
 )
 
 timeout /t 3 /nobreak > nul
-start http://localhost:5173
+start chrome http://localhost:5173
 
 echo.
 echo  ============================================

@@ -20,6 +20,19 @@ export default function CircuitPuzzleWindow({ obj, stageId }) {
   const boxes           = useGameStore((s) => s.circuitBoxes)
   const setCircuitBoxes = useGameStore((s) => s.setCircuitBoxes)
   const alreadySolved   = stages[stageId]?.[obj.objId]?.solved
+  const [imgSrc, setImgSrc] = useState(null)
+
+  useEffect(() => {
+    let url = null
+    const load = () => {
+      fetch('/circuit2_new.svg?' + Date.now())
+        .then(r => r.blob())
+        .then(blob => { url = URL.createObjectURL(blob); setImgSrc(url) })
+        .catch(() => setTimeout(load, 500))
+    }
+    load()
+    return () => { if (url) URL.revokeObjectURL(url) }
+  }, [])
 
   const toggleBox = (j) => {
     if (alreadySolved) return
@@ -40,15 +53,14 @@ export default function CircuitPuzzleWindow({ obj, stageId }) {
       windowId={obj.objId}
       initialPos={{ x: 280, y: 120 }}
     >
-      <div className="puzzle-window" style={{ padding: '12px' }}>
+      <div className="puzzle-window" style={{ padding: '12px', background: '#dde4f0' }}>
         {(
           <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img
-              src="/circuit2_new.svg"
-              alt="circuit puzzle"
-              draggable={false}
-              style={{ display: 'block', width: '500px', userSelect: 'none' }}
-            />
+            {imgSrc
+              ? <img src={imgSrc} alt="circuit puzzle" draggable={false}
+                  style={{ display: 'block', width: '500px', userSelect: 'none' }} />
+              : <div style={{ width: 500, height: 368, background: '#dde4f0' }} />
+            }
             {BOX_POSITIONS.map((pos, j) => (
               <div
                 key={j}

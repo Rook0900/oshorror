@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import WindowFrame from './WindowFrame'
 import ConnectWindow from './ConnectWindow'
 import SplitCircuitPuzzle from './SplitCircuitPuzzle'
 import { useGameStore } from '../../store/gameStore'
+
+function RetryImg({ src, width, height, style }) {
+  const [key, setKey] = useState(0)
+  return (
+    <img
+      key={key}
+      src={`${src}?v=${key}`}
+      width={width} height={height} style={style}
+      onError={() => setTimeout(() => setKey(k => k + 1), 300)}
+    />
+  )
+}
 
 const HORROR_EVENTS = { 1: 'blackout', 2: 'distort', 3: 'glitch' }
 
@@ -30,13 +42,14 @@ function ConnectFileIcon({ onDoubleClick }) {
       onMouseEnter={e => e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'}
       onMouseLeave={e => e.currentTarget.style.borderColor='transparent'}
     >
-      <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering:'pixelated' }}>
-        <rect width="8" height="8" fill="#0d0d1a" />
-        <rect x="1" y="2" width="5" height="5" fill="#225522" />
-        <rect x="1" y="1" width="3" height="2" fill="#33aa33" />
-        <rect x="4" y="1" width="2" height="1" fill="#33aa33" />
-        <rect x="2" y="4" width="3" height="1" fill="#88ff88" />
-      </svg>
+      <div style={{
+        width: 32, height: 32,
+        WebkitMaskImage: 'url(/download_sky.png)',
+        WebkitMaskSize: '100% 100%',
+        maskImage: 'url(/download_sky.png)',
+        maskSize: '100% 100%',
+        background: '#4a90a3',
+      }} />
       <span style={{ fontFamily:"'Segoe UI','Malgun Gothic',sans-serif", fontSize:'9px', color:'#aaffaa', marginTop:'4px' }}>
         connect
       </span>
@@ -54,7 +67,7 @@ function InstalledFileIcon({ name, index, solved, onClick }) {
       onMouseEnter={e => { if (!solved) e.currentTarget.style.borderColor='rgba(255,255,255,0.2)' }}
       onMouseLeave={e => e.currentTarget.style.borderColor='transparent'}
     >
-      <img src={`/piece_${index + 1}.svg`} width="48" height="48" style={{ imageRendering:'pixelated' }} />
+      <RetryImg src="/document_icon.svg" width={48} height={48} style={{ imageRendering:'pixelated' }} />
       <span style={{
         fontFamily:"'Consolas','Courier New',monospace",
         fontSize:'7px', color: solved ? '#448844' : '#8888cc',
@@ -75,6 +88,8 @@ export default function ProgramWindow({ obj, stageId }) {
   const setCentralDownloaded = useGameStore(s => s.setCentralDownloaded)
 
   const closeWindow     = useGameStore(s => s.closeWindow)
+  const prog02Activated = useGameStore(s => s.prog02Activated)
+  const activateProg02  = useGameStore(s => s.activateProg02)
   const unlocked        = isUnlocked(stageId, obj.objId)
   const isCentralkeeper = (stageId === 1 || stageId === 3) && obj.objId === 'PROG_01'
   const isErrorProg     = (stageId === 1 || stageId === 3) && obj.objId === 'PROG_02'
@@ -109,18 +124,61 @@ export default function ProgramWindow({ obj, stageId }) {
 
   const handleSolved = () => {
     setSolved(true)
-    setOpenFiles([false, false, false, false, false])
-    triggerHorror(HORROR_EVENTS[stageId] || 'blackout')
-    setTimeout(() => { if (stageId < 3) nextStage() }, 4000)
+    setBoxes([0, 0, 0, 0, 0, 0])
+    activateProg02()
   }
 
   // ── 오류 프로그램 ──
-  if (isErrorProg) {
+  if (isErrorProg && !prog02Activated) {
     return (
       <WindowFrame title="오류" windowId={obj.objId} initialPos={{ x: 280, y: 220 }}>
         <div className="program-window">
           <div className="program-content" style={{ color:'#ffcc44' }}>
             지정된 파일을<br />찾을 수 없습니다.
+          </div>
+        </div>
+      </WindowFrame>
+    )
+  }
+
+  // ── 중앙관리장치 활성화 ──
+  if (isErrorProg && prog02Activated) {
+    const folders = ['sys_core', 'null_trace', 'iu8nt', 'dead_loop']
+    return (
+      <WindowFrame title="중앙관리장치" windowId={obj.objId} initialPos={{ x: 280, y: 220 }}>
+        <div className="program-window" style={{ padding: '10px 8px', minWidth: 240 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {folders.map((name) => {
+              const isTarget = name === 'iu8nt'
+              const lastClick = { t: 0 }
+              return (
+                <div key={name}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    width: 64, cursor: 'pointer', padding: '6px 4px',
+                    border: '1px solid transparent', borderRadius: 3,
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'transparent'}
+                  onClick={() => {
+                    if (!isTarget) return
+                    const now = Date.now()
+                    if (now - lastClick.t < 400) {
+                      triggerHorror('powerdown')
+                      setTimeout(() => { if (stageId < 3) nextStage() }, 4000)
+                    }
+                    lastClick.t = now
+                  }}
+                >
+                  <RetryImg src="/folder_icon.svg" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
+                  <span style={{
+                    fontFamily: "'Consolas','Courier New',monospace",
+                    fontSize: '7px', color: isTarget ? '#aaffaa' : '#8888cc',
+                    marginTop: 4, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.3,
+                  }}>{name}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </WindowFrame>
@@ -157,7 +215,7 @@ export default function ProgramWindow({ obj, stageId }) {
     return (
       <>
         <WindowFrame title="centralkeeper" windowId={obj.objId} initialPos={{ x: 300, y: 160 }}>
-          <div className="program-window" style={{ padding:'0' }}>
+          <div className="program-window" style={{ padding:'0', background:'#03030e' }}>
             <div style={{
               padding:'8px 12px', borderBottom:'1px solid #1a1a2a',
               fontFamily:"'Malgun Gothic','맑은 고딕',sans-serif",

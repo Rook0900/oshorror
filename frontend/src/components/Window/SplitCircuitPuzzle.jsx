@@ -15,6 +15,14 @@ const PIECES = [
   { src: '/pieces/piece_5.svg', nw: 280, nh: 260 },
 ]
 
+const PIECES_SOLVED = [
+  { src: '/pieces/piece_11.svg', nw: 200, nh: 260 },
+  { src: '/pieces/piece_22.svg', nw: 280, nh: 260 },
+  { src: '/pieces/piece_33.svg', nw: 200, nh: 260 },
+  { src: '/pieces/piece_44.svg', nw: 400, nh: 260 },
+  { src: '/pieces/piece_55.svg', nw: 280, nh: 260 },
+]
+
 const INIT_POS = [
   { x: 20,  y: 60  },
   { x: 135, y: 40  },
@@ -60,13 +68,13 @@ function ToggleBox({ dx, dy, value, onToggle }) {
         left: Math.round(dx - TOGGLE_SIZE / 2),
         top:  Math.round(dy - TOGGLE_SIZE / 2),
         width: TOGGLE_SIZE, height: TOGGLE_SIZE,
-        background: value ? '#1a3a1a' : '#0d0d1a',
-        border: `2px solid ${value ? '#44ff88' : '#3a3a5a'}`,
+        background: 'white',
+        border: '2px solid #111',
         borderRadius: 3,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer',
-        fontFamily: 'monospace', fontSize: 11, fontWeight: 'bold',
-        color: value ? '#44ff88' : '#555577',
+        fontFamily: 'Courier New, monospace', fontSize: 13, fontWeight: 'bold',
+        color: '#111',
         userSelect: 'none',
         zIndex: 1,
       }}>
@@ -79,6 +87,7 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
                       onMouseDown, onClose, overlays, boxes, onToggle }) {
   const dw = Math.round(piece.nw * SC)
   const dh = Math.round(piece.nh * SC)
+  const [imgKey, setImgKey] = useState(0)
 
   return (
     <div
@@ -107,13 +116,7 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
           justifyContent: 'space-between',
           cursor: 'move',
         }}>
-          <span style={{
-            fontFamily: "'Segoe UI','Malgun Gothic',sans-serif",
-            fontSize: '9px', color: '#aaa',
-            overflow: 'hidden', whiteSpace: 'nowrap', flex: 1,
-          }}>
-            {filename}
-          </span>
+          <span style={{ flex: 1 }} />
           <button
             onMouseDown={e => e.stopPropagation()}
             onClick={e => { e.stopPropagation(); onClose() }}
@@ -127,8 +130,13 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
 
       {/* 이미지 + 토글 오버레이 */}
       <div style={{ position: 'relative' }}>
-        <img src={piece.src} width={dw} height={dh}
-          style={{ display: 'block', pointerEvents: 'none' }} />
+        <img
+          key={imgKey}
+          src={`${piece.src}?v=${imgKey}`}
+          width={dw} height={dh}
+          style={{ display: 'block', pointerEvents: 'none' }}
+          onError={() => setTimeout(() => setImgKey(k => k + 1), 300)}
+        />
         {overlays?.map((ov, k) => (
           <ToggleBox
             key={k}
@@ -143,8 +151,11 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
 }
 
 export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onCloseFile, filenames, onSolved }) {
+  const isSolved = boxes.length >= 6 && boxes.every((v, i) => v === CORRECT[i])
+  const activePieces = isSolved ? PIECES_SOLVED : PIECES
+
   useEffect(() => {
-    if (boxes.length >= 6 && boxes.every((v, i) => v === CORRECT[i])) onSolved()
+    if (isSolved) onSolved()
   }, [boxes])
 
   const [positions, setPositions] = useState(() => INIT_POS.map(p => ({ ...p })))
@@ -193,7 +204,7 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
             pos={positions[i]}
             showTitle={!overlapping}
             filename={filenames[i]}
-            piece={PIECES[i]}
+            piece={activePieces[i]}
             zIndex={topFile === i ? 291 : 290}
             onMouseDown={makeDragHandler(i)}
             onClose={() => onCloseFile(i)}

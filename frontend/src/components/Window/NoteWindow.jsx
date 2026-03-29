@@ -1,11 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import WindowFrame from './WindowFrame'
 import { getHint } from '../../api/stageApi'
+
+const GLITCH_CHARS = '▓▒░█▄▀■□▪▫◆◇○●※§¶†‡#@%&*!?/\\|~^`<>{}[]░▒▓'
+
+// 남길 글자: { line, char } — char 음수면 끝에서부터
+const KEEP_POSITIONS = [
+  { line: 0,  char: 0  },  // 본
+  { line: 0,  char: -2 },  // 다
+  { line: 1,  char: 3  },  // 면
+  { line: 1,  char: 10 },  // i
+  { line: 10, char: 0  },  // u
+  { line: 10, char: 8  },  // 8
+  { line: 11, char: 3  },  // t
+]
+
+function corruptText(text) {
+  const lines = text.split('\n')
+  return lines.map((line, li) => {
+    const keeps = KEEP_POSITIONS
+      .filter(k => k.line === li)
+      .map(k => k.char < 0 ? line.length + k.char : k.char)
+    return line.split('').map((ch, ci) => {
+      if (keeps.includes(ci)) return ch
+      return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+    }).join('')
+  }).join('\n')
+}
 
 // 서버 오류 시 사용할 fallback 힌트
 const FALLBACK_HINTS = {
   1: {
-    NOTE_01: `본 기기를 통해 중앙관리장치에 접근할 수 있으며,
+    NOTE_01: `본 기기를 통해 중앙관리장치에 접근이 가능합니다.
 바탕화면에 위치한 interactive 파일은 접근 상태를 제어하는 역할을 합니다.
 
 해당 파일을 실행하면 시스템의 중심 관리 기능이 자동으로 활성화되어
@@ -40,20 +66,31 @@ S _ A _ O W
 
 export default function NoteWindow({ obj, stageId }) {
   const [text, setText] = useState('로딩 중...')
+  const [displayText, setDisplayText] = useState('로딩 중...')
+  const isCorrupted = stageId === 1 && obj.objId === 'NOTE_01'
+  const ivRef = useRef(null)
 
   useEffect(() => {
     getHint(stageId, obj.objId)
       .then((data) => {
-        const text = typeof data === 'string' ? data : data.content ?? JSON.stringify(data)
-        // HTML 응답(서버 미실행 시 Vite fallback)이면 에러 처리
-        if (typeof text === 'string' && text.trimStart().startsWith('<')) throw new Error('html')
-        setText(text)
+        const t = typeof data === 'string' ? data : data.content ?? JSON.stringify(data)
+        if (typeof t === 'string' && t.trimStart().startsWith('<')) throw new Error('html')
+        setText(t)
       })
       .catch(() => {
         const fallback = FALLBACK_HINTS[stageId]?.[obj.objId]
         setText(fallback || '힌트를 불러올 수 없습니다.')
       })
   }, [stageId, obj.objId])
+
+  useEffect(() => {
+    if (!isCorrupted) { setDisplayText(text); return }
+    setDisplayText(corruptText(text))
+    ivRef.current = setInterval(() => {
+      setDisplayText(corruptText(text))
+    }, 120)
+    return () => clearInterval(ivRef.current)
+  }, [text, isCorrupted])
 
   return (
     <WindowFrame
@@ -62,8 +99,11 @@ export default function NoteWindow({ obj, stageId }) {
       initialPos={{ x: 250, y: 120 }}
     >
       <div className="note-window">
-        <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif" }}>
-          {text}
+        <div className="note-text" style={{
+          fontFamily: isCorrupted ? "'Courier New',monospace" : "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif",
+          letterSpacing: isCorrupted ? '0.05em' : undefined,
+        }}>
+          {displayText}
         </div>
       </div>
     </WindowFrame>

@@ -27,23 +27,29 @@ export default function ConnectWindow({ onDownloadComplete }) {
       transform: 'translate(-50%, -50%)',
       zIndex: 220,
       width: 280,
-      background: '#0a0a14',
+      background: '#2a2a3e',
       border: '2px solid #3a3a5a',
       boxShadow: '4px 4px 0 #000',
     }}>
       <div style={{
-        background: '#14142a',
+        background: '#4a4a6a',
         padding: '5px 12px',
         borderBottom: '1px solid #2a2a3a',
         fontFamily: "'Segoe UI','Malgun Gothic',sans-serif",
         fontSize: '11px', color: '#888',
       }}>
-        파일 수신 중
       </div>
 
       <div style={{ padding: '16px 14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-          <img src="/folder_icon.svg" width="32" height="32" />
+          <div style={{
+              width: 32, height: 32,
+              WebkitMaskImage: 'url(/download_sky.png)',
+              WebkitMaskSize: '100% 100%',
+              maskImage: 'url(/download_sky.png)',
+              maskSize: '100% 100%',
+              background: '#4a90a3',
+            }} />
           <span style={{
             fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
             fontSize: '12px', color: '#aaaacc',

@@ -38,7 +38,10 @@
       "Bash(cp \"h:/claudeProject/oshorror/once/piece_2_p2.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_2.svg\")",
       "Bash(cp \"h:/claudeProject/oshorror/once/piece_3_p3.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_3.svg\")",
       "Bash(cp \"h:/claudeProject/oshorror/once/piece_4_p4.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_4.svg\")",
-      "Bash(curl -s http://localhost:8080/api/stages/1)"
+      "Bash(curl -s http://localhost:8080/api/stages/1)",
+      "Bash(start chrome:*)",
+      "Bash(ls c:/Users/UNIONE07/Desktop/asdf/oshorror/stage1/piece_*.svg)",
+      "Bash(ls -la c:/Users/UNIONE07/Desktop/asdf/oshorror/frontend/public/piece_*.svg)"
     ]
   }
 }

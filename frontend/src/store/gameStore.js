@@ -6,8 +6,10 @@ export const useGameStore = create((set, get) => ({
   horrorType: null,
   openWindows: [],
   centralDownloaded: false,
+  prog02Activated: false,
 
   setCentralDownloaded: () => set({ centralDownloaded: true }),
+  activateProg02: () => set({ prog02Activated: true }),
 
   stages: {
     1: {

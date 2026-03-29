@@ -1,13 +1,26 @@
+import { useState } from 'react'
 import { useGameStore } from '../../store/gameStore'
 import { useDoubleClick } from '../../hooks/useDoubleClick'
+
+function RetryImg({ src, width, height, style }) {
+  const [key, setKey] = useState(0)
+  return (
+    <img
+      key={key}
+      src={`${src}?v=${key}`}
+      width={width} height={height} style={style}
+      onError={() => setTimeout(() => setKey(k => k + 1), 300)}
+    />
+  )
+}
 
 // 간단한 픽셀아트 SVG 스프라이트
 const SPRITES = {
   note: (
-    <img src="/document_icon.svg" width="32" height="32" style={{ imageRendering: 'pixelated' }} />
+    <RetryImg src="/document_icon.svg" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
   ),
   file: (
-    <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
+    <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
       <rect width="8" height="8" fill="#2a2a4a"/>
       <rect x="1" y="2" width="5" height="5" fill="#aa6622"/>
       <rect x="1" y="1" width="3" height="2" fill="#cc8833"/>
@@ -16,7 +29,7 @@ const SPRITES = {
     </svg>
   ),
   prog: (
-    <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
+    <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
       <rect width="8" height="8" fill="#2a2a4a"/>
       <rect x="1" y="1" width="6" height="6" fill="#224422"/>
       <rect x="2" y="3" width="1" height="2" fill="#44ff44"/>
@@ -26,10 +39,10 @@ const SPRITES = {
     </svg>
   ),
   folder: (
-    <img src="/folder_icon.svg" width="32" height="32" style={{ imageRendering: 'pixelated' }} />
+    <RetryImg src="/folder_icon.svg" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
   ),
   prog_locked: (
-    <svg width="32" height="32" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
+    <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
       <rect width="8" height="8" fill="#2a2a4a"/>
       <rect x="1" y="1" width="6" height="6" fill="#1a1a1a"/>
       <rect x="3" y="2" width="2" height="2" fill="#555"/>

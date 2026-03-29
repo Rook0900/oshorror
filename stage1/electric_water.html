@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>전선+물 지직 소리</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    color: #c8e8f4;
+    gap: 24px;
+  }
+  h1 { font-size: 16px; letter-spacing: 4px; color: #6aaaca; }
+  .controls {
+    background: #0f1a28;
+    border: 1px solid #3a8aaa;
+    border-radius: 10px;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 340px;
+  }
+  .control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .control-row label { font-size: 11px; letter-spacing: 1px; color: #6aaaca; width: 80px; }
+  .control-row input[type=range] { flex: 1; accent-color: #3a8aaa; }
+  .control-row span { font-size: 11px; color: #c8e8f4; width: 36px; text-align: right; }
+  .btn {
+    background: #1e3a52;
+    border: 2px solid #3a8aaa;
+    color: #c8e8f4;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    letter-spacing: 3px;
+    padding: 16px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    width: 100%;
+    transition: background 0.15s;
+    text-transform: uppercase;
+  }
+  .btn:hover { background: #3a8aaa; color: #1a1a2e; }
+  .btn:active { transform: scale(0.98); }
+  .btn-loop {
+    background: transparent;
+    border: 1px solid #3a8aaa;
+    color: #6aaaca;
+    font-size: 12px;
+    padding: 10px 0;
+  }
+  .btn-loop.on { background: #3a8aaa; color: #1a1a2e; }
+</style>
+</head>
+<body>
+
+<h1>💧⚡ 전선 + 물 지직</h1>
+
+<div class="controls">
+  <div class="control-row">
+    <label>길이</label>
+    <input type="range" id="dur" min="0.2" max="3.0" step="0.1" value="1.5" oninput="update('dur','durVal',this.value+'s')">
+    <span id="durVal">1.5s</span>
+  </div>
+  <div class="control-row">
+    <label>강도</label>
+    <input type="range" id="vol" min="0.3" max="2.5" step="0.1" value="1.2" oninput="update('vol','volVal',this.value)">
+    <span id="volVal">1.2</span>
+  </div>
+  <div class="control-row">
+    <label>지직 밀도</label>
+    <input type="range" id="density" min="0.1" max="0.9" step="0.05" value="0.6" oninput="update('density','densityVal',this.value)">
+    <span id="densityVal">0.6</span>
+  </div>
+  <div class="control-row">
+    <label>주파수</label>
+    <input type="range" id="freq" min="500" max="5000" step="100" value="2000" oninput="update('freq','freqVal',this.value+'Hz')">
+    <span id="freqVal">2000Hz</span>
+  </div>
+
+  <button class="btn" onclick="play()">▶ 재생</button>
+  <button class="btn btn-loop" id="loopBtn" onclick="toggleLoop()">🔁 반복 재생</button>
+</div>
+
+<script>
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let looping = false;
+let loopTimer = null;
+
+function update(id, valId, display) {
+  document.getElementById(valId).textContent = display;
+}
+
+function play() {
+  const dur      = parseFloat(document.getElementById('dur').value);
+  const vol      = parseFloat(document.getElementById('vol').value);
+  const density  = parseFloat(document.getElementById('density').value);
+  const freq     = parseFloat(document.getElementById('freq').value);
+  const sampleRate = ctx.sampleRate;
+
+  const buf = ctx.createBuffer(1, sampleRate * dur, sampleRate);
+  const data = buf.getChannelData(0);
+
+  for (let i = 0; i < data.length; i++) {
+    const t = i / sampleRate;
+    const crackle = Math.random() > (1 - density) ? (Math.random() * 2 - 1) * 1.5 : 0;
+    const hum     = Math.sin(2 * Math.PI * 60 * t) * 0.15;
+    const sizzle  = (Math.random() * 2 - 1) * 0.4;
+    const env     = Math.pow(Math.max(0, 1 - t / dur), 0.4);
+    data[i]       = (crackle + hum + sizzle) * env;
+  }
+
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = freq;
+  bp.Q.value = 0.3;
+
+  const hp = ctx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 400;
+
+  const gain = ctx.createGain();
+  gain.gain.value = vol;
+
+  src.connect(hp);
+  hp.connect(bp);
+  bp.connect(gain);
+  gain.connect(ctx.destination);
+  src.start();
+}
+
+function toggleLoop() {
+  looping = !looping;
+  const btn = document.getElementById('loopBtn');
+  btn.classList.toggle('on', looping);
+  btn.textContent = looping ? '⏹ 반복 중지' : '🔁 반복 재생';
+  if (looping) loopPlay();
+  else { clearTimeout(loopTimer); }
+}
+
+function loopPlay() {
+  if (!looping) return;
+  play();
+  const dur = parseFloat(document.getElementById('dur').value);
+  loopTimer = setTimeout(loopPlay, dur * 1000 + 100);
+}
+</script>
+</body>
+</html>

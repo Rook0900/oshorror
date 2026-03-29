@@ -72,7 +72,7 @@ export default function WirePuzzleWindow({ obj, stageId }) {
             height="220"
             style={{ display: 'block', margin: '8px auto 0' }}
           >
-            <rect width="300" height="220" fill="#070710" />
+            <rect width="300" height="220" fill="#ffffff" />
 
             {/* 전선 — 글로우 레이어 */}
             {WIRES.map(([a, b], wi) =>
@@ -88,13 +88,27 @@ export default function WirePuzzleWindow({ obj, stageId }) {
               ) : null
             )}
 
+            {/* 전선 — 테두리 (꺼진 전선 구분용) */}
+            {WIRES.map(([a, b], wi) =>
+              !isLit(a, b) ? (
+                <line
+                  key={`wire-outline-${wi}`}
+                  x1={BULB_POS[a].x} y1={BULB_POS[a].y}
+                  x2={BULB_POS[b].x} y2={BULB_POS[b].y}
+                  stroke="#9999bb"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                />
+              ) : null
+            )}
+
             {/* 전선 — 본체 */}
             {WIRES.map(([a, b], wi) => (
               <line
                 key={`wire-${wi}`}
                 x1={BULB_POS[a].x} y1={BULB_POS[a].y}
                 x2={BULB_POS[b].x} y2={BULB_POS[b].y}
-                stroke={isLit(a, b) ? '#ffcc00' : '#2a2a3a'}
+                stroke={isLit(a, b) ? '#ffcc00' : '#111118'}
                 strokeWidth="4"
                 strokeLinecap="round"
               />

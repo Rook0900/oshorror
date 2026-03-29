@@ -18,7 +18,7 @@ const STAGE_FALLBACK = {
       { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: 'interactive', spriteKey: 'folder' },
       { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 200, label: '중앙관리장치.exe', spriteKey: 'prog' },
     ],
-    bgColor: '#0d0d1a',
+    bgColor: '#05050f',
   },
   2: {
     objects: [
@@ -28,7 +28,7 @@ const STAGE_FALLBACK = {
       { objId: 'FILE_02', objType: 'FILE', posX: 80, posY: 440, label: '암호2', spriteKey: 'file' },
       { objId: 'PROG_01', objType: 'PROGRAM', posX: 200, posY: 80, label: '프로그램', spriteKey: 'prog' },
     ],
-    bgColor: '#1a0d0d',
+    bgColor: '#0f0505',
   },
   3: {
     objects: [
@@ -37,7 +37,7 @@ const STAGE_FALLBACK = {
       { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'centralkeeper', spriteKey: 'prog' },
       { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 320, label: '중앙관리장치.exe', spriteKey: 'prog' },
     ],
-    bgColor: '#050510',
+    bgColor: '#02020a',
   },
 }
 
@@ -58,12 +58,16 @@ export default function Desktop({ stageId }) {
   const { stageData, loading } = useStage(stageId)
   const openWindows = useGameStore((s) => s.openWindows)
   const openWindow = useGameStore((s) => s.openWindow)
+  const prog02Activated = useGameStore((s) => s.prog02Activated)
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
-  // 오브젝트 목록은 항상 STAGE_FALLBACK 우선 사용
-  // (서버 DB의 오래된 label/spriteKey가 덮어쓰는 문제 방지)
-  const objects = STAGE_FALLBACK[stageId]?.objects || stage?.objects || []
+  const rawObjects = STAGE_FALLBACK[stageId]?.objects || stage?.objects || []
+  const objects = rawObjects.map(obj =>
+    obj.objId === 'NOTE_01' && prog02Activated
+      ? { ...obj, label: 'execution' }
+      : obj
+  )
   const bgColor = stage?.bgColor || '#0d0d1a'
 
   // 스테이지 1·3 진입 시 centralkeeper 창 자동 오픈
@@ -87,7 +91,7 @@ export default function Desktop({ stageId }) {
 
   return (
     <>
-      <div className="desktop" style={{ background: bgColor }}>
+      <div className="desktop" style={{ backgroundColor: bgColor }}>
         {objects.map((obj) => (
           <DesktopIcon
             key={obj.objId}

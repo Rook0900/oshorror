@@ -27,8 +27,18 @@ VALUES (8, 2, 'PROG_01', 'PROGRAM', 200, 80, 'prog');
 -- 힌트 텍스트
 INSERT INTO hint_text (id, stage_id, note_id, content)
 VALUES (1, 1, 'NOTE_01',
-'벽 속 깊은 곳에서 들리지 않는 흐름이 꿈틀거린다.
-그 길을 따라가면, 어둠을 찢고 빛이 깨어날 것이다.');
+'본 기기를 통해 중앙관리장치에 접근이 가능합니다.
+바탕화면에 위치한 interactive 파일은 접근 상태를 제어하는 역할을 합니다.
+
+해당 파일을 실행하면 시스템의 중심 관리 기능이 자동으로 활성화되어
+전체 흐름을 안정적으로 조율합니다.
+
+사용자는 매달 중요 설비의 연결 상태를 검토해야 하며,
+필요 시 제공된 주소값을 참고하여 관리 절차를 진행하시기 바랍니다.
+
+중요 설비 주소값:
+unknown_888.exe, Luna
+bolt, belle');
 
 INSERT INTO hint_text (id, stage_id, note_id, content)
 VALUES (2, 2, 'NOTE_01',

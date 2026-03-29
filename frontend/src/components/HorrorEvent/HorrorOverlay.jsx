@@ -14,9 +14,24 @@ export default function HorrorOverlay() {
   const horrorType = useGameStore((s) => s.horrorType)
   const clearHorror = useGameStore((s) => s.clearHorror)
   const [showTexts, setShowTexts] = useState(false)
+  const [flickerOn, setFlickerOn] = useState(true)
 
   useEffect(() => {
     if (!horrorActive) return
+
+    if (horrorType === 'powerdown') {
+      // 두꺼비집 효과: 빠른 깜빡임 후 완전 암전
+      const flickerTimes = [0, 80, 160, 260, 340, 420, 500, 560]
+      const timers = flickerTimes.map((delay, i) =>
+        setTimeout(() => setFlickerOn(i % 2 === 0 ? false : true), delay)
+      )
+      // 560ms 후 완전 암전 고정
+      const darkTimer = setTimeout(() => setFlickerOn(false), 620)
+      return () => {
+        timers.forEach(clearTimeout)
+        clearTimeout(darkTimer)
+      }
+    }
 
     if (horrorType === 'blackout') {
       setShowTexts(true)
@@ -46,6 +61,15 @@ export default function HorrorOverlay() {
 
   return (
     <div className={`horror-overlay ${horrorType}`}>
+      {horrorType === 'powerdown' && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: flickerOn ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.7)',
+          transition: flickerOn ? 'none' : 'background 0.15s',
+          pointerEvents: 'all',
+        }} />
+      )}
       {horrorType === 'blackout' && (
         <div style={{
           position: 'absolute',
