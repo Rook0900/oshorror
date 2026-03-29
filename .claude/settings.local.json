@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(choco:*)",
+      "Bash(cmd.exe /c \"choco install gradle -y\" 2>&1)",
+      "Bash(cmd.exe /c \"choco install gradle -y 2>&1\")",
+      "Bash(cmd.exe /c \"choco install gradle -y\" 2>&1 | cat)",
+      "Bash(powershell.exe -Command \"choco install gradle -y\" 2>&1)",
+      "Bash(powershell.exe -Command \"& 'C:\\\\ProgramData\\\\chocolatey\\\\bin\\\\choco.exe' install gradle -y\" 2>&1)",
+      "Read(//c/ProgramData/**)",
+      "Read(//c//**)",
+      "Bash(where.exe choco:*)",
+      "Bash(powershell.exe -Command \"\n\\\\$url = 'https://services.gradle.org/distributions/gradle-8.4-bin.zip'\n\\\\$dest = 'C:\\\\\\\\gradle-8.4-bin.zip'\n\\\\$installDir = 'C:\\\\\\\\Gradle'\nWrite-Host 'Downloading Gradle 8.4...'\n[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\nInvoke-WebRequest -Uri \\\\$url -OutFile \\\\$dest -UseBasicParsing\nWrite-Host 'Extracting...'\nExpand-Archive -Path \\\\$dest -DestinationPath \\\\$installDir -Force\nWrite-Host 'Done.'\n\" 2>&1)",
+      "Bash(powershell.exe -Command \"\n\\\\$url = 'https://services.gradle.org/distributions/gradle-8.4-bin.zip'\n\\\\$dest = \\\\\"\\\\$env:USERPROFILE\\\\\\\\gradle-8.4-bin.zip\\\\\"\n\\\\$installDir = \\\\\"\\\\$env:USERPROFILE\\\\\\\\Gradle\\\\\"\nWrite-Host \\\\\"Downloading to \\\\$dest ...\\\\\"\n[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\nInvoke-WebRequest -Uri \\\\$url -OutFile \\\\$dest -UseBasicParsing\nWrite-Host 'Extracting...'\nExpand-Archive -Path \\\\$dest -DestinationPath \\\\$installDir -Force\nWrite-Host 'Cleaning up zip...'\nRemove-Item \\\\$dest -Force\nWrite-Host \\\\\"Installed to \\\\$installDir\\\\\\\\gradle-8.4\\\\\"\n\" 2>&1)",
+      "Bash(powershell.exe -Command \"\n\\\\$url = 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.9%2B9/OpenJDK17U-jdk_x64_windows_hotspot_17.0.9_9.zip'\n\\\\$dest = \\\\\"\\\\$env:USERPROFILE\\\\\\\\jdk17.zip\\\\\"\n\\\\$installDir = \\\\\"\\\\$env:USERPROFILE\\\\\\\\Java\\\\\"\nWrite-Host 'Downloading JDK 17...'\n[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12\nInvoke-WebRequest -Uri \\\\$url -OutFile \\\\$dest -UseBasicParsing\nWrite-Host 'Extracting...'\nExpand-Archive -Path \\\\$dest -DestinationPath \\\\$installDir -Force\nRemove-Item \\\\$dest -Force\n\\\\$jdkDir = \\(Get-ChildItem \\\\$installDir | Select-Object -First 1\\).FullName\nWrite-Host \\\\\"JDK installed to \\\\$jdkDir\\\\\"\n\" 2>&1)",
+      "Bash(powershell.exe -Command \"\nGet-ChildItem 'C:\\\\Program Files\\\\Java' -ErrorAction SilentlyContinue\nGet-ChildItem 'C:\\\\Program Files\\\\Eclipse Adoptium' -ErrorAction SilentlyContinue\nGet-ChildItem 'C:\\\\Program Files\\\\Microsoft' -Filter '*jdk*' -ErrorAction SilentlyContinue\nGet-ChildItem 'C:\\\\Program Files\\\\Amazon Corretto' -ErrorAction SilentlyContinue\n\\\\$env:JAVA_HOME\n\" 2>&1)",
+      "Bash(powershell.exe -Command \"winget install --id EclipseAdoptium.Temurin.17.JDK --accept-source-agreements --accept-package-agreements\" 2>&1)",
+      "Bash(cd:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c \"taskkill /PID 6016 /F\" 2>&1)",
+      "Bash(cmd /c \"taskkill /PID 6016 /F 2>&1\")",
+      "Bash(cmd /c \"netstat -ano | findstr :5173\" 2>&1)",
+      "Bash(cmd /c \"for /f \\\\\"tokens=5\\\\\" %a in \\('netstat -ano ^| findstr :5173 ^| findstr LISTENING'\\) do taskkill /PID %a /F\" 2>&1)",
+      "Bash(cmd /c \"netstat -ano | findstr :5173 | findstr LISTENING\" 2>&1)",
+      "Bash(cmd /c \"netstat -ano | findstr LISTENING | findstr \\\\\"517\\\\\"\" 2>&1)",
+      "Bash(cmd /c \"netstat -ano | findstr LISTENING\" 2>&1 | grep -i \"517\")",
+      "Bash(kill:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 6016, 10088, 10492 -Force -ErrorAction SilentlyContinue; Start-Sleep 2; \\(Get-NetTCPConnection -LocalPort 5173,5174,5175 -ErrorAction SilentlyContinue\\).Count\")",
+      "Bash(find H:claudeProjectoshorrorbackend -type f -name *.java)",
+      "Bash(cat \"h:\\\\claudeProject\\\\oshorror\\\\docs\"/*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//h/claudeProject/oshorror/**)",
+      "Bash(done)",
+      "Bash(mkdir -p \"h:/claudeProject/oshorror/frontend/public/pieces\")",
+      "Bash(cp \"h:/claudeProject/oshorror/once/piece_1_p1.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_1.svg\")",
+      "Bash(cp \"h:/claudeProject/oshorror/once/piece_2_p2.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_2.svg\")",
+      "Bash(cp \"h:/claudeProject/oshorror/once/piece_3_p3.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_3.svg\")",
+      "Bash(cp \"h:/claudeProject/oshorror/once/piece_4_p4.svg\" \"h:/claudeProject/oshorror/frontend/public/pieces/piece_4.svg\")"
+    ]
+  }
+}

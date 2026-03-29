@@ -1,0 +1,129 @@
+import { useState, useEffect } from 'react'
+import DesktopIcon from './DesktopIcon'
+import WindowFrame from '../Window/WindowFrame'
+import NoteWindow from '../Window/NoteWindow'
+import PuzzleWindow from '../Window/PuzzleWindow'
+import WirePuzzleWindow from '../Window/WirePuzzleWindow'
+import CircuitPuzzleWindow from '../Window/CircuitPuzzleWindow'
+import ProgramWindow from '../Window/ProgramWindow'
+import { useGameStore } from '../../store/gameStore'
+import { useStage } from '../../hooks/useStage'
+
+// 스테이지별 오브젝트 배치 (서버 데이터 대체용 fallback)
+const STAGE_FALLBACK = {
+  1: {
+    objects: [
+      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '노트.txt', spriteKey: 'note' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 200, label: 'centralkeeper', spriteKey: 'file' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: 'interactive', spriteKey: 'file' },
+      { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 200, label: '중앙관리장치.exe', spriteKey: 'prog' },
+    ],
+    bgColor: '#0d0d1a',
+  },
+  2: {
+    objects: [
+      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '기록1.txt', spriteKey: 'note' },
+      { objId: 'NOTE_02', objType: 'NOTE', posX: 80, posY: 200, label: '기록2.txt', spriteKey: 'note' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: '암호1', spriteKey: 'file' },
+      { objId: 'FILE_02', objType: 'FILE', posX: 80, posY: 440, label: '암호2', spriteKey: 'file' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 200, posY: 80, label: '프로그램', spriteKey: 'prog' },
+    ],
+    bgColor: '#1a0d0d',
+  },
+  3: {
+    objects: [
+      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '노트.txt', spriteKey: 'note' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: '전기 회로', spriteKey: 'file' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'centralkeeper', spriteKey: 'prog' },
+      { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 320, label: '중앙관리장치.exe', spriteKey: 'prog' },
+    ],
+    bgColor: '#050510',
+  },
+}
+
+function Clock() {
+  const [time, setTime] = useState(new Date())
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div className="taskbar-clock">
+      {time.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+    </div>
+  )
+}
+
+export default function Desktop({ stageId }) {
+  const { stageData, loading } = useStage(stageId)
+  const openWindows = useGameStore((s) => s.openWindows)
+  const openWindow = useGameStore((s) => s.openWindow)
+  const [selectedIcon, setSelectedIcon] = useState(null)
+
+  const stage = stageData || STAGE_FALLBACK[stageId]
+  // 오브젝트 목록은 항상 STAGE_FALLBACK 우선 사용
+  // (서버 DB의 오래된 label/spriteKey가 덮어쓰는 문제 방지)
+  const objects = STAGE_FALLBACK[stageId]?.objects || stage?.objects || []
+  const bgColor = stage?.bgColor || '#0d0d1a'
+
+  // 스테이지 1·3 진입 시 centralkeeper 창 자동 오픈
+  useEffect(() => {
+    if (stageId === 1 || stageId === 3) openWindow('PROG_01')
+  }, [stageId])
+
+  const handleIconSingleClick = (objId) => setSelectedIcon(objId)
+  const handleIconDoubleClick = (objId) => {
+    setSelectedIcon(objId)
+    openWindow(objId)
+  }
+
+  if (loading) {
+    return (
+      <div className="desktop" style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="pixel-font" style={{ color: '#444' }}>LOADING...</span>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="desktop" style={{ background: bgColor }}>
+        {objects.map((obj) => (
+          <DesktopIcon
+            key={obj.objId}
+            obj={obj}
+            stageId={stageId}
+            selected={selectedIcon === obj.objId}
+            onSingleClick={handleIconSingleClick}
+            onDoubleClick={handleIconDoubleClick}
+          />
+        ))}
+      </div>
+
+      {/* 열린 창들 렌더링 */}
+      {openWindows.map((winId) => {
+        const obj = objects.find((o) => o.objId === winId)
+        if (!obj) return null
+        if (obj.objType === 'NOTE')
+          return <NoteWindow key={winId} obj={obj} stageId={stageId} />
+        if (obj.objType === 'FILE') {
+          if (stageId === 1 && obj.objId === 'FILE_01')
+            return <CircuitPuzzleWindow key={winId} obj={obj} stageId={stageId} />
+          if (stageId === 3 && obj.objId === 'FILE_01')
+            return <WirePuzzleWindow key={winId} obj={obj} stageId={stageId} />
+          return <PuzzleWindow key={winId} obj={obj} stageId={stageId} />
+        }
+        if (obj.objType === 'PROGRAM')
+          return <ProgramWindow key={winId} obj={obj} stageId={stageId} />
+        return null
+      })}
+
+      <div className="taskbar">
+        <span className="pixel-font" style={{ color: '#666', fontSize: '6px' }}>
+          STAGE {stageId}
+        </span>
+        <Clock />
+      </div>
+    </>
+  )
+}

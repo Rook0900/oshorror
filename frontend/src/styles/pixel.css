@@ -1,0 +1,378 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* 폰트 원칙
+   Press Start 2P  : 영문·숫자 전용 픽셀 폰트 (한글 미지원)
+   한글 폴백       : Malgun Gothic → 맑은 고딕 → Apple SD Gothic Neo
+   한글이 포함된 모든 요소는 한글 폰트를 우선 지정해야 깨지지 않음 */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #000;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.app-root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 픽셀아트 이미지 안티앨리어싱 차단 */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* 픽셀 폰트 — 영문·숫자 전용 */
+.pixel-font {
+  font-family: 'Press Start 2P', 'Malgun Gothic', '맑은 고딕', monospace;
+  font-size: 8px;
+  line-height: 1.8;
+}
+
+/* 바탕화면 */
+.desktop {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  user-select: none;
+  background: #1a1a2e;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* 바탕화면 아이콘 */
+.desktop-icon {
+  position: absolute;
+  width: 64px;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  border: 2px solid transparent;
+}
+
+.desktop-icon:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.desktop-icon.selected {
+  border-color: rgba(100, 200, 255, 0.6);
+  background: rgba(100, 200, 255, 0.1);
+}
+
+.desktop-icon .icon-sprite {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 4px;
+  display: block;
+}
+
+.desktop-icon .icon-label {
+  font-family: 'Segoe UI', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 8px;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 창 시스템 */
+.window-frame {
+  position: fixed;
+  background: #2a2a3e;
+  border: 2px solid #555;
+  box-shadow: 4px 4px 0 #000;
+  min-width: 300px;
+  min-height: 200px;
+  z-index: 100;
+}
+
+.window-titlebar {
+  background: #4a4a6a;
+  padding: 6px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  border-bottom: 2px solid #333;
+}
+
+.window-titlebar .title-text {
+  /* 타이틀에 한글 포함 → 한글 폰트 우선 */
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: #fff;
+}
+
+.window-close-btn {
+  width: 16px;
+  height: 16px;
+  background: #cc3333;
+  border: 2px solid #ff5555;
+  color: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+.window-close-btn:hover {
+  background: #ff5555;
+}
+
+.window-close-btn.disabled {
+  background: #555;
+  border-color: #333;
+  cursor: not-allowed;
+  color: #777;
+}
+
+.window-content {
+  padding: 12px;
+  color: #ccc;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 메모장 창 — pre 태그 기본 monospace 폰트를 반드시 !important로 덮어써야 함 */
+.note-window .note-text {
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.9;
+  color: #aaffaa;
+  white-space: pre-wrap;
+  background: #111;
+  padding: 10px;
+  border: 1px solid #333;
+  min-height: 150px;
+}
+
+/* 퍼즐 창 설명문 — 한글 포함 */
+.puzzle-window .puzzle-desc {
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 12px;
+  color: #ffcc44;
+  margin-bottom: 12px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.puzzle-input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.puzzle-input {
+  background: #111;
+  border: 2px solid #555;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 6px 8px;
+  width: 120px;
+  text-align: center;
+  letter-spacing: 4px;
+}
+
+.puzzle-input:focus {
+  outline: none;
+  border-color: #aaffaa;
+}
+
+.puzzle-submit-btn {
+  background: #2a5a2a;
+  border: 2px solid #4aaa4a;
+  color: #aaffaa;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 12px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.puzzle-submit-btn:hover {
+  background: #3a7a3a;
+}
+
+.puzzle-result {
+  margin-top: 8px;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 12px;
+}
+
+.puzzle-result.correct { color: #aaffaa; }
+.puzzle-result.wrong   { color: #ff6666; }
+
+/* 프로그램 창 */
+.program-window .program-content {
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 13px;
+  color: #ff4444;
+  text-align: center;
+  padding: 20px;
+  line-height: 2.2;
+}
+
+/* 태스크바 */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: #1a1a3e;
+  border-top: 2px solid #333;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  z-index: 999;
+}
+
+.taskbar-clock {
+  margin-left: auto;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: #aaa;
+}
+
+/* 공포 오버레이 */
+.horror-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.horror-overlay.glitch   { animation: glitch 0.1s infinite; }
+.horror-overlay.blackout { background: #000; pointer-events: all; animation: fadeBlackout 2s forwards; }
+.horror-overlay.distort  { animation: distort 0.3s infinite; }
+
+.horror-text {
+  position: absolute;
+  /* 한글 공포 텍스트 대비 한글 폰트 우선 */
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #ff0000;
+  text-shadow: 2px 2px 4px #f00, -2px -2px 4px #f00;
+  animation: flicker 0.15s infinite;
+  pointer-events: none;
+}
+
+@keyframes glitch {
+  0%   { filter: none; transform: translate(0); }
+  20%  { filter: hue-rotate(90deg) saturate(3); transform: translate(-2px, 1px); }
+  40%  { filter: invert(0.2); transform: translate(2px, -1px); }
+  60%  { filter: hue-rotate(180deg); transform: translate(-1px, 2px); }
+  80%  { filter: saturate(5); transform: translate(1px, -2px); }
+  100% { filter: none; transform: translate(0); }
+}
+
+@keyframes fadeBlackout {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes distort {
+  0%   { transform: skewX(0deg); }
+  25%  { transform: skewX(3deg) scaleY(1.02); }
+  50%  { transform: skewX(-2deg) scaleY(0.98); }
+  75%  { transform: skewX(1deg); }
+  100% { transform: skewX(0deg); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* 전기선 퍼즐 */
+.wire-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  width: 200px;
+}
+
+.wire-bulb {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.wire-bulb.on {
+  background: #ffee44;
+  border-color: #ffcc00;
+  box-shadow: 0 0 12px #ffee44, 0 0 24px #ffcc0088;
+}
+
+.wire-bulb.off {
+  background: #1a1a1a;
+  border-color: #333;
+  box-shadow: none;
+}
+
+.wire-bulb:hover { border-color: #aaa; }
+
+.wire-bulb-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #222;
+  pointer-events: none;
+}
+
+.wire-bulb.off .wire-bulb-label { color: #555; }
+
+/* 잠긴 아이콘 */
+.desktop-icon.locked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.lock-icon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+}
+
+/* 스테이지 전환 */
+.stage-transition {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: #ff0000;
+  animation: stageIn 2s forwards;
+}
+
+@keyframes stageIn {
+  0%   { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
+}

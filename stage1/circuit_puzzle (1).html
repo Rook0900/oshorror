@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회로도 퍼즐</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .game-area {
+    position: relative;
+    width: 680px;
+    height: 520px;
+    background: #fff;
+    border: 2px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .game-area::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+  .piece {
+    position: absolute; cursor: grab; user-select: none; z-index: 1;
+  }
+  .piece:hover { z-index: 100; }
+  .piece.dragging { cursor: grabbing; z-index: 999; opacity: 0.9; }
+  .piece svg {
+    display: block;
+    background: rgba(255,255,255,0.95);
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.12);
+  }
+  .box-label { cursor: pointer; }
+  .box-label:hover { opacity: 0.6; }
+</style>
+</head>
+<body>
+<div class="game-area" id="gameArea"></div>
+
+<script>
+let isDragging = false;
+const boxState = { B1:0, B2:0, B3:0, B4:0, B5:0, B6:0 };
+
+const boxDefs = [
+  { id:'B1', cx:150, cy:143 },
+  { id:'B2', cx:251, cy:213 },
+  { id:'B3', cx:306, cy:213 },
+  { id:'B4', cx:361, cy:213 },
+  { id:'B5', cx:416, cy:213 },
+  { id:'B6', cx:471, cy:213 },
+];
+
+function buildSvgContent() {
+  const labels = boxDefs.map(b =>
+    `<text class="box-label" data-box="${b.id}" x="${b.cx}" y="${b.cy}"
+      text-anchor="middle" dominant-baseline="central"
+      font-size="13" font-weight="bold" font-family="Courier New,monospace"
+      fill="#999">${boxState[b.id]}</text>`
+  ).join('');
+  return `
+  <circle cx="490" cy="50" r="22" fill="#b0b0b0" stroke="#888" stroke-width="2.5"/>
+  <circle cx="95" cy="235" r="22" fill="#f5c842" stroke="#c4922a" stroke-width="2.5"/>
+  <circle cx="95" cy="235" r="28" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="95" cy="315" r="22" fill="#b0b0b0" stroke="#888" stroke-width="2.5"/>
+  <circle cx="350" cy="420" r="22" fill="#f5c842" stroke="#c4922a" stroke-width="2.5"/>
+  <circle cx="350" cy="420" r="28" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="570" cy="295" r="22" fill="#f5c842" stroke="#c4922a" stroke-width="2.5"/>
+  <circle cx="570" cy="295" r="28" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="430" cy="420" r="22" fill="#f5c842" stroke="#c4922a" stroke-width="2.5"/>
+  <circle cx="430" cy="420" r="28" fill="none" stroke="#f5c842" stroke-width="1.5" opacity="0.6"/>
+  <rect x="215" y="175" width="300" height="75" rx="4" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="128" y="120" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="229" y="190" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="284" y="190" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="339" y="190" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="394" y="190" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <rect x="449" y="190" width="45" height="45" rx="3" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="128,142 95,142 95,213" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="229,212 170,212 170,315 123,315" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="306,190 306,100 490,100 490,72" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="361,235 361,270 270,270 270,470 350,470 350,442" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="416,235 416,357 570,357 570,317" fill="none" stroke="#333" stroke-width="2"/>
+  <polyline points="471,190 471,150 620,150 620,420 452,420" fill="none" stroke="#333" stroke-width="2"/>
+  ${labels}`;
+}
+
+const pieces = [
+  { id:'p1', x:0,   y:0,   w:200, h:260 },
+  { id:'p2', x:200, y:0,   w:280, h:260 },
+  { id:'p3', x:480, y:0,   w:200, h:260 },
+  { id:'p4', x:0,   y:260, w:400, h:260 },
+  { id:'p5', x:400, y:260, w:280, h:260 },
+];
+
+const initPos = [
+  { left:10,  top:10  },
+  { left:10,  top:280 },
+  { left:460, top:10  },
+  { left:220, top:10  },
+  { left:350, top:280 },
+];
+
+const gameArea = document.getElementById('gameArea');
+
+function buildPiece(p, i) {
+  const div = document.createElement('div');
+  div.className = 'piece';
+  div.id = p.id;
+  div.style.left   = initPos[i].left + 'px';
+  div.style.top    = initPos[i].top  + 'px';
+  div.style.width  = p.w + 'px';
+  div.style.height = p.h + 'px';
+  const clipId = `clip_${p.id}`;
+  div.innerHTML = `
+    <svg width="${p.w}" height="${p.h}" viewBox="${p.x} ${p.y} ${p.w} ${p.h}" xmlns="http://www.w3.org/2000/svg">
+      <defs><clipPath id="${clipId}"><rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}"/></clipPath></defs>
+      <g clip-path="url(#${clipId})">${buildSvgContent()}</g>
+    </svg>`;
+  return div;
+}
+
+pieces.forEach((p, i) => gameArea.appendChild(buildPiece(p, i)));
+
+// 박스 토글 클릭
+gameArea.addEventListener('click', e => {
+  if (isDragging) return;
+  const label = e.target.closest('.box-label');
+  if (!label) return;
+  toggleBox(label.dataset.box);
+});
+
+// 드래그
+let drag = null, ox = 0, oy = 0, startX = 0, startY = 0;
+
+gameArea.addEventListener('mousedown', e => {
+  const piece = e.target.closest('.piece');
+  if (!piece) return;
+  if (e.target.closest('.box-label')) return;
+  drag = piece; isDragging = false;
+  piece.classList.add('dragging');
+  const r = gameArea.getBoundingClientRect();
+  ox = e.clientX - r.left - piece.offsetLeft;
+  oy = e.clientY - r.top  - piece.offsetTop;
+  startX = e.clientX; startY = e.clientY;
+  e.preventDefault();
+});
+
+gameArea.addEventListener('touchstart', e => {
+  const piece = e.target.closest('.piece');
+  if (!piece) return;
+  if (e.target.closest('.box-label')) return;
+  const t = e.touches[0];
+  drag = piece; isDragging = false;
+  piece.classList.add('dragging');
+  const r = gameArea.getBoundingClientRect();
+  ox = t.clientX - r.left - piece.offsetLeft;
+  oy = t.clientY - r.top  - piece.offsetTop;
+  startX = t.clientX; startY = t.clientY;
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('mousemove', e => {
+  if (!drag) return;
+  if (Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3) isDragging = true;
+  const r = gameArea.getBoundingClientRect();
+  drag.style.left = Math.max(0, Math.min(e.clientX - r.left - ox, gameArea.offsetWidth  - drag.offsetWidth))  + 'px';
+  drag.style.top  = Math.max(0, Math.min(e.clientY - r.top  - oy, gameArea.offsetHeight - drag.offsetHeight)) + 'px';
+});
+
+document.addEventListener('touchmove', e => {
+  if (!drag) return;
+  const t = e.touches[0];
+  if (Math.abs(t.clientX - startX) > 3 || Math.abs(t.clientY - startY) > 3) isDragging = true;
+  const r = gameArea.getBoundingClientRect();
+  drag.style.left = Math.max(0, Math.min(t.clientX - r.left - ox, gameArea.offsetWidth  - drag.offsetWidth))  + 'px';
+  drag.style.top  = Math.max(0, Math.min(t.clientY - r.top  - oy, gameArea.offsetHeight - drag.offsetHeight)) + 'px';
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('mouseup',  () => { if (drag) { drag.classList.remove('dragging'); drag = null; } setTimeout(() => isDragging = false, 50); });
+document.addEventListener('touchend', () => { if (drag) { drag.classList.remove('dragging'); drag = null; } setTimeout(() => isDragging = false, 50); });
+
+function toggleBox(id) {
+  boxState[id] = boxState[id] === 0 ? 1 : 0;
+  const val = boxState[id];
+  document.querySelectorAll(`[data-box="${id}"]`).forEach(el => {
+    el.textContent = String(val);
+    el.setAttribute('fill', val === 1 ? '#f5c842' : '#999');
+  });
+}
+</script>
+</body>
+</html>
