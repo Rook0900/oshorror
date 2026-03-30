@@ -279,6 +279,16 @@ body {
   100% { opacity: 1; }
 }
 
+@keyframes powerFlicker {
+  0%   { opacity: 0.2; }
+  15%  { opacity: 1; }
+  30%  { opacity: 0.1; }
+  45%  { opacity: 1; }
+  60%  { opacity: 0.3; }
+  75%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
 @keyframes distort {
   0%   { transform: skewX(0deg); }
   25%  { transform: skewX(3deg) scaleY(1.02); }

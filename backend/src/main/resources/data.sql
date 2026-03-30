@@ -38,7 +38,8 @@ VALUES (1, 1, 'NOTE_01',
 
 중요 설비 주소값:
 unknown_888.exe, Luna
-bolt, belle');
+bolt, belle
+iu8nt');
 
 INSERT INTO hint_text (id, stage_id, note_id, content)
 VALUES (2, 2, 'NOTE_01',

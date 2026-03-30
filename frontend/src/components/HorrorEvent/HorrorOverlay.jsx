@@ -20,17 +20,9 @@ export default function HorrorOverlay() {
     if (!horrorActive) return
 
     if (horrorType === 'powerdown') {
-      // 두꺼비집 효과: 빠른 깜빡임 후 완전 암전
-      const flickerTimes = [0, 80, 160, 260, 340, 420, 500, 560]
-      const timers = flickerTimes.map((delay, i) =>
-        setTimeout(() => setFlickerOn(i % 2 === 0 ? false : true), delay)
-      )
-      // 560ms 후 완전 암전 고정
-      const darkTimer = setTimeout(() => setFlickerOn(false), 620)
-      return () => {
-        timers.forEach(clearTimeout)
-        clearTimeout(darkTimer)
-      }
+      setFlickerOn(true)
+      const t = setTimeout(() => setFlickerOn(false), 700)
+      return () => clearTimeout(t)
     }
 
     if (horrorType === 'blackout') {
@@ -65,8 +57,8 @@ export default function HorrorOverlay() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: flickerOn ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.7)',
-          transition: flickerOn ? 'none' : 'background 0.15s',
+          background: 'rgba(0,0,0,0.7)',
+          animation: flickerOn ? 'powerFlicker 0.7s steps(1) forwards' : 'none',
           pointerEvents: 'all',
         }} />
       )}

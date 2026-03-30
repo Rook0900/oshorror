@@ -1,32 +1,7 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import WindowFrame from './WindowFrame'
 import { getHint } from '../../api/stageApi'
-
-const GLITCH_CHARS = '▓▒░█▄▀■□▪▫◆◇○●※§¶†‡#@%&*!?/\\|~^`<>{}[]░▒▓'
-
-// 남길 글자: { line, char } — char 음수면 끝에서부터
-const KEEP_POSITIONS = [
-  { line: 0,  char: 0  },  // 본
-  { line: 0,  char: -2 },  // 다
-  { line: 1,  char: 3  },  // 면
-  { line: 1,  char: 10 },  // i
-  { line: 10, char: 0  },  // u
-  { line: 10, char: 8  },  // 8
-  { line: 11, char: 3  },  // t
-]
-
-function corruptText(text) {
-  const lines = text.split('\n')
-  return lines.map((line, li) => {
-    const keeps = KEEP_POSITIONS
-      .filter(k => k.line === li)
-      .map(k => k.char < 0 ? line.length + k.char : k.char)
-    return line.split('').map((ch, ci) => {
-      if (keeps.includes(ci)) return ch
-      return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
-    }).join('')
-  }).join('\n')
-}
+import { useGameStore } from '../../store/gameStore'
 
 // 서버 오류 시 사용할 fallback 힌트
 const FALLBACK_HINTS = {
@@ -42,7 +17,8 @@ const FALLBACK_HINTS = {
 
 중요 설비 주소값:
 unknown_888.exe, Luna
-bolt, belle`,
+bolt, belle
+iu8nt`,
   },
   2: {
     NOTE_01: `[파일1 힌트]
@@ -64,11 +40,36 @@ S _ A _ O W
   },
 }
 
+function RedactedText({ text }) {
+  return (
+    <div style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif", fontSize: '12px', lineHeight: '1.8' }}>
+      {text.split('\n').map((line, i) => {
+        const isVisible = line.includes('iu8nt')
+        return (
+          <div key={i} style={{ position: 'relative', minHeight: '1.8em' }}>
+            <span style={{ visibility: isVisible ? 'visible' : 'hidden', color: '#ccccff', fontWeight: 'bold' }}>
+              {line || ' '}
+            </span>
+            {line.trim() && !isVisible && (
+              <div style={{
+                position: 'absolute',
+                top: '15%', left: 0,
+                width: '100%', height: '75%',
+                background: '#111',
+                borderRadius: '2px',
+              }} />
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function NoteWindow({ obj, stageId }) {
+  const centralSolved = useGameStore(s => s.centralSolved)
   const [text, setText] = useState('로딩 중...')
-  const [displayText, setDisplayText] = useState('로딩 중...')
-  const isCorrupted = stageId === 1 && obj.objId === 'NOTE_01'
-  const ivRef = useRef(null)
+  const isRedacted = stageId === 1 && obj.objId === 'NOTE_01' && centralSolved
 
   useEffect(() => {
     getHint(stageId, obj.objId)
@@ -83,15 +84,6 @@ export default function NoteWindow({ obj, stageId }) {
       })
   }, [stageId, obj.objId])
 
-  useEffect(() => {
-    if (!isCorrupted) { setDisplayText(text); return }
-    setDisplayText(corruptText(text))
-    ivRef.current = setInterval(() => {
-      setDisplayText(corruptText(text))
-    }, 120)
-    return () => clearInterval(ivRef.current)
-  }, [text, isCorrupted])
-
   return (
     <WindowFrame
       title={`메모장 — ${obj.label}`}
@@ -99,12 +91,14 @@ export default function NoteWindow({ obj, stageId }) {
       initialPos={{ x: 250, y: 120 }}
     >
       <div className="note-window">
-        <div className="note-text" style={{
-          fontFamily: isCorrupted ? "'Courier New',monospace" : "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif",
-          letterSpacing: isCorrupted ? '0.05em' : undefined,
-        }}>
-          {displayText}
-        </div>
+        {isRedacted
+          ? <RedactedText text={text} />
+          : (
+            <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif" }}>
+              {text}
+            </div>
+          )
+        }
       </div>
     </WindowFrame>
   )

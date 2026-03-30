@@ -3,6 +3,7 @@
 // - 정답: boxes = [1, 0,0,1,1,1]  → 다음 스테이지
 
 import { useEffect, useRef, useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
 
 const TH = 26   // 타이틀바 높이
 const SC = 0.5  // 이미지 스케일
@@ -151,22 +152,25 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
 }
 
 export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onCloseFile, filenames, onSolved }) {
+  const centralSolved = useGameStore(s => s.centralSolved)
   const isSolved = boxes.length >= 6 && boxes.every((v, i) => v === CORRECT[i])
-  const activePieces = isSolved ? PIECES_SOLVED : PIECES
+  const activePieces = centralSolved ? PIECES_SOLVED : PIECES
 
   useEffect(() => {
     if (isSolved) onSolved()
   }, [boxes])
 
   const [positions, setPositions] = useState(() => INIT_POS.map(p => ({ ...p })))
-  const [topFile,   setTopFile]   = useState(null)
+  const [zOrder, setZOrder] = useState([0, 1, 2, 3, 4])
+
+  const bringToFront = (i) =>
+    setZOrder(prev => [...prev.filter(x => x !== i), i])
 
   // 드래그 핸들러 (창별)
   const offsetRef = useRef({ x: 0, y: 0 })
   const makeDragHandler = (i) => (e) => {
-    // 이미 다른 드래그 중이면 무시
     if (e.button !== 0) return
-    setTopFile(i)
+    bringToFront(i)
     offsetRef.current = { x: e.clientX - positions[i].x, y: e.clientY - positions[i].y }
     const onMove = (ev) => {
       setPositions(prev => prev.map((p, k) =>
@@ -195,6 +199,14 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
 
   return (
     <>
+      {centralSolved && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex: 295,
+          pointerEvents: 'none',
+        }} />
+      )}
       {[0, 1, 2, 3, 4].map(i => {
         if (!openFiles[i]) return null
         const overlapping = isOverlapping(i)
@@ -205,7 +217,7 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
             showTitle={!overlapping}
             filename={filenames[i]}
             piece={activePieces[i]}
-            zIndex={topFile === i ? 291 : 290}
+            zIndex={290 + zOrder.indexOf(i)}
             onMouseDown={makeDragHandler(i)}
             onClose={() => onCloseFile(i)}
             overlays={OVERLAYS[i]}

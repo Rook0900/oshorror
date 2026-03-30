@@ -50,7 +50,7 @@ function ConnectFileIcon({ onDoubleClick }) {
         maskSize: '100% 100%',
         background: '#4a90a3',
       }} />
-      <span style={{ fontFamily:"'Segoe UI','Malgun Gothic',sans-serif", fontSize:'9px', color:'#aaffaa', marginTop:'4px' }}>
+      <span style={{ fontFamily:"'Segoe UI','Malgun Gothic',sans-serif", fontSize:'9px', color:'#aaaacc', marginTop:'4px' }}>
         connect
       </span>
     </div>
@@ -58,9 +58,16 @@ function ConnectFileIcon({ onDoubleClick }) {
 }
 
 // 설치된 파일 아이콘
-function InstalledFileIcon({ name, index, solved, onClick }) {
+function InstalledFileIcon({ name, index, solved, onDoubleClick }) {
+  const lastClick = useRef(0)
+  const handleClick = () => {
+    if (solved) return
+    const now = Date.now()
+    if (now - lastClick.current < 400) onDoubleClick()
+    lastClick.current = now
+  }
   return (
-    <div onClick={onClick}
+    <div onClick={handleClick}
       style={{ display:'flex', flexDirection:'column', alignItems:'center',
         cursor: solved ? 'default' : 'pointer', padding:'6px', width:'72px',
         border:'1px solid transparent', borderRadius:'3px', opacity: solved ? 0.5 : 1 }}
@@ -70,7 +77,7 @@ function InstalledFileIcon({ name, index, solved, onClick }) {
       <RetryImg src="/document_icon.svg" width={48} height={48} style={{ imageRendering:'pixelated' }} />
       <span style={{
         fontFamily:"'Consolas','Courier New',monospace",
-        fontSize:'7px', color: solved ? '#448844' : '#8888cc',
+        fontSize:'7px', color: solved ? '#aaaacc' : '#8888cc',
         marginTop:'3px', textAlign:'center', wordBreak:'break-all', lineHeight:'1.3',
       }}>
         {solved ? '✓' : ''}{name}
@@ -87,7 +94,8 @@ export default function ProgramWindow({ obj, stageId }) {
   const centralDownloaded   = useGameStore(s => s.centralDownloaded)
   const setCentralDownloaded = useGameStore(s => s.setCentralDownloaded)
 
-  const closeWindow     = useGameStore(s => s.closeWindow)
+  const closeWindow      = useGameStore(s => s.closeWindow)
+  const setCentralSolved = useGameStore(s => s.setCentralSolved)
   const prog02Activated = useGameStore(s => s.prog02Activated)
   const activateProg02  = useGameStore(s => s.activateProg02)
   const unlocked        = isUnlocked(stageId, obj.objId)
@@ -124,6 +132,7 @@ export default function ProgramWindow({ obj, stageId }) {
 
   const handleSolved = () => {
     setSolved(true)
+    setCentralSolved()
     setBoxes([0, 0, 0, 0, 0, 0])
     activateProg02()
   }
@@ -142,46 +151,89 @@ export default function ProgramWindow({ obj, stageId }) {
   }
 
   // ── 중앙관리장치 활성화 ──
+  const [iu8ntPhase, setIu8ntPhase] = useState(null) // null | 'transmitting' | 'complete'
+  const audioRef = useRef(null)
+  const iu8ntLastClick = useRef(0)
+
+  const handleIu8ntDoubleClick = () => {
+    if (iu8ntPhase) return
+    setIu8ntPhase('transmitting')
+
+    const audio = new Audio('/static_noise.flac')
+    audioRef.current = audio
+    audio.play().catch(() => {})
+
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+      setIu8ntPhase('complete')
+    }, 5000)
+
+    setTimeout(() => {
+      if (stageId < 3) nextStage()
+    }, 8000)
+  }
+
   if (isErrorProg && prog02Activated) {
     const folders = ['sys_core', 'null_trace', 'iu8nt', 'dead_loop']
     return (
-      <WindowFrame title="중앙관리장치" windowId={obj.objId} initialPos={{ x: 280, y: 220 }}>
-        <div className="program-window" style={{ padding: '10px 8px', minWidth: 240 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {folders.map((name) => {
-              const isTarget = name === 'iu8nt'
-              const lastClick = { t: 0 }
-              return (
-                <div key={name}
-                  style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    width: 64, cursor: 'pointer', padding: '6px 4px',
-                    border: '1px solid transparent', borderRadius: 3,
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'transparent'}
-                  onClick={() => {
-                    if (!isTarget) return
-                    const now = Date.now()
-                    if (now - lastClick.t < 400) {
-                      triggerHorror('powerdown')
-                      setTimeout(() => { if (stageId < 3) nextStage() }, 4000)
-                    }
-                    lastClick.t = now
-                  }}
-                >
-                  <RetryImg src="/folder_icon.svg" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
-                  <span style={{
-                    fontFamily: "'Consolas','Courier New',monospace",
-                    fontSize: '7px', color: isTarget ? '#aaffaa' : '#8888cc',
-                    marginTop: 4, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.3,
-                  }}>{name}</span>
-                </div>
-              )
-            })}
+      <>
+        <WindowFrame title="중앙관리장치" windowId={obj.objId} initialPos={{ x: 280, y: 220 }}>
+          <div className="program-window" style={{ padding: '10px 8px', minWidth: 240 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {folders.map((name) => {
+                const isTarget = name === 'iu8nt'
+                return (
+                  <div key={name}
+                    style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      width: 64, cursor: 'pointer', padding: '6px 4px',
+                      border: '1px solid transparent', borderRadius: 3,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'transparent'}
+                    onClick={() => {
+                      if (!isTarget) return
+                      const now = Date.now()
+                      if (now - iu8ntLastClick.current < 400) handleIu8ntDoubleClick()
+                      iu8ntLastClick.current = now
+                    }}
+                  >
+                    <RetryImg src="/folder_icon.svg" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
+                    <span style={{
+                      fontFamily: "'Consolas','Courier New',monospace",
+                      fontSize: '7px', color: isTarget ? '#aaaacc' : '#8888cc',
+                      marginTop: 4, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.3,
+                    }}>{name}</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
-      </WindowFrame>
+        </WindowFrame>
+
+        {iu8ntPhase && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: '#000',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            gap: 16,
+          }}>
+            <div style={{
+              fontFamily: "'Consolas','Courier New',monospace",
+              fontSize: '13px',
+              color: iu8ntPhase === 'complete' ? '#aaffaa' : '#44aaff',
+              letterSpacing: '0.1em',
+              animation: iu8ntPhase === 'transmitting' ? 'flicker 0.4s infinite' : 'none',
+            }}>
+              {iu8ntPhase === 'transmitting' ? '패킷 전송중...' : '설치가 완료되었습니다. 곧 재부팅 됩니다.'}
+            </div>
+          </div>
+        )}
+      </>
     )
   }
 
@@ -223,7 +275,7 @@ export default function ProgramWindow({ obj, stageId }) {
               display:'flex', justifyContent:'space-between',
             }}>
               <span>설치된 파일</span>
-              <span style={{ color: solved ? '#44ff88' : '#445' }}>
+              <span style={{ color: solved ? '#aaaacc' : '#445' }}>
                 {solved ? '5 / 5' : '0 / 5'}
               </span>
             </div>
@@ -237,7 +289,7 @@ export default function ProgramWindow({ obj, stageId }) {
                   name={name}
                   index={i}
                   solved={solved}
-                  onClick={() => { if (!solved) openFile(i) }}
+                  onDoubleClick={() => openFile(i)}
                 />
               ))}
             </div>

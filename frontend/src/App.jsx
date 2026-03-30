@@ -9,7 +9,13 @@ const CLICK_THROTTLE = 80
 
 function App() {
   const currentStage = useGameStore((s) => s.currentStage)
+  const centralSolved = useGameStore((s) => s.centralSolved)
   const lastClickTime = useRef(0)
+
+  // 어두움 오버레이 활성 시 클릭 볼륨 감소
+  useEffect(() => {
+    clickAudio.volume = centralSolved ? 0.2 : 1.0
+  }, [centralSolved])
 
   // 클릭 사운드
   useEffect(() => {
@@ -39,6 +45,15 @@ function App() {
     <div className="app-root">
       <Desktop stageId={currentStage} />
       <HorrorOverlay />
+      {centralSolved && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex: 100,
+          pointerEvents: 'none',
+          transition: 'opacity 0.5s',
+        }} />
+      )}
     </div>
   )
 }
