@@ -57,7 +57,7 @@ export default function HorrorOverlay() {
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(0,0,0,0.7)',
+          background: 'rgba(0,0,0,0.6)',
           animation: flickerOn ? 'powerFlicker 0.7s steps(1) forwards' : 'none',
           pointerEvents: 'all',
         }} />

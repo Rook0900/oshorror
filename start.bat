@@ -12,7 +12,7 @@ set FRONTEND=%ROOT%frontend
 set BACKEND=%ROOT%backend
 
 if not defined JAVA_HOME (
-    set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot
+    set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot
 )
 set PATH=%JAVA_HOME%\bin;%PATH%
 

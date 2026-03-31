@@ -17,8 +17,7 @@ const FALLBACK_HINTS = {
 
 중요 설비 주소값:
 unknown_888.exe, Luna
-bolt, belle
-iu8nt`,
+bolt, belle`,
   },
   2: {
     NOTE_01: `[파일1 힌트]
@@ -40,25 +39,72 @@ S _ A _ O W
   },
 }
 
-function RedactedText({ text }) {
+function getVisiblePositions(line, lineIdx, lastIdx, secondLastIdx, isExecution) {
+  const visible = new Set()
+  const chars = [...line]
+
+  if (!isExecution) {
+    // 일반 redact: 첫줄 '본','다' / 둘째줄 '면','i' / 마지막전줄 u·8(1)·n / 마지막 t
+    if (lineIdx === 0) {
+      chars.forEach((ch, j) => { if (ch === '본' || ch === '다') visible.add(j) })
+    } else if (lineIdx === 1) {
+      chars.forEach((ch, j) => { if (ch === '면' || ch === 'i') visible.add(j) })
+    } else if (lineIdx === secondLastIdx) {
+      let eightsShown = 0
+      chars.forEach((ch, j) => {
+        if (ch === 'u' || ch === 'n') visible.add(j)
+        else if (ch === '8' && eightsShown === 0) { visible.add(j); eightsShown++ }
+      })
+    } else if (lineIdx === lastIdx) {
+      chars.forEach((ch, j) => { if (ch === 't') visible.add(j) })
+    }
+  } else {
+    // execution 상태: 둘째줄 i 하나 / 마지막전줄 u·n·8 각 하나 / 마지막 t 하나
+    if (lineIdx === 1) {
+      let shown = false
+      chars.forEach((ch, j) => { if (ch === 'i' && !shown) { visible.add(j); shown = true } })
+    } else if (lineIdx === secondLastIdx) {
+      let uShown = false, nShown = false, eightShown = false
+      chars.forEach((ch, j) => {
+        if (ch === 'u' && !uShown) { visible.add(j); uShown = true }
+        else if (ch === 'n' && !nShown) { visible.add(j); nShown = true }
+        else if (ch === '8' && !eightShown) { visible.add(j); eightShown = true }
+      })
+    } else if (lineIdx === lastIdx) {
+      let shown = false
+      chars.forEach((ch, j) => { if (ch === 't' && !shown) { visible.add(j); shown = true } })
+    }
+  }
+  return visible
+}
+
+function RedactedText({ text, isExecution }) {
+  const lines = text.split('\n')
+  const lastIdx = lines.length - 1
+  const secondLastIdx = lines.length - 2
   return (
-    <div style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif", fontSize: '12px', lineHeight: '1.8' }}>
-      {text.split('\n').map((line, i) => {
-        const isVisible = line.includes('iu8nt')
+    <div style={{ fontFamily: "'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif", fontSize: '13px', lineHeight: '1.9' }}>
+      {lines.map((line, lineIdx) => {
+        const visible = getVisiblePositions(line, lineIdx, lastIdx, secondLastIdx, isExecution)
         return (
-          <div key={i} style={{ position: 'relative', minHeight: '1.8em' }}>
-            <span style={{ visibility: isVisible ? 'visible' : 'hidden', color: '#ccccff', fontWeight: 'bold' }}>
-              {line || ' '}
-            </span>
-            {line.trim() && !isVisible && (
-              <div style={{
-                position: 'absolute',
-                top: '15%', left: 0,
-                width: '100%', height: '75%',
-                background: '#111',
-                borderRadius: '2px',
-              }} />
-            )}
+          <div key={lineIdx} style={{ minHeight: '1.8em', whiteSpace: 'pre-wrap' }}>
+            {line === '' ? '\u00A0' : [...line].map((ch, j) => {
+              if (/\s/.test(ch)) return <span key={j}>{ch}</span>
+              if (visible.has(j)) {
+                return <span key={j} style={{ color: '#ccccff', fontWeight: 'bold' }}>{ch}</span>
+              }
+              return (
+                <span key={j} style={{
+                  display: 'inline-block',
+                  width: '0.9em', height: '0.85em',
+                  background: '#222233',
+                  border: '1px solid #333355',
+                  borderRadius: '1px',
+                  verticalAlign: 'middle',
+                  margin: '0 0.5px',
+                }} />
+              )
+            })}
           </div>
         )
       })}
@@ -68,8 +114,10 @@ function RedactedText({ text }) {
 
 export default function NoteWindow({ obj, stageId }) {
   const centralSolved = useGameStore(s => s.centralSolved)
+  const prog02Activated = useGameStore(s => s.prog02Activated)
   const [text, setText] = useState('로딩 중...')
   const isRedacted = stageId === 1 && obj.objId === 'NOTE_01' && centralSolved
+  const isExecution = isRedacted && prog02Activated
 
   useEffect(() => {
     getHint(stageId, obj.objId)
@@ -92,7 +140,7 @@ export default function NoteWindow({ obj, stageId }) {
     >
       <div className="note-window">
         {isRedacted
-          ? <RedactedText text={text} />
+          ? <RedactedText text={text} isExecution={isExecution} />
           : (
             <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif" }}>
               {text}

@@ -77,7 +77,8 @@ function InstalledFileIcon({ name, index, solved, onDoubleClick }) {
       <RetryImg src="/document_icon.svg" width={48} height={48} style={{ imageRendering:'pixelated' }} />
       <span style={{
         fontFamily:"'Consolas','Courier New',monospace",
-        fontSize:'7px', color: solved ? '#aaaacc' : '#8888cc',
+        fontSize:'9px', color: solved ? '#aaaacc' : '#ccccff',
+        fontWeight: 'bold',
         marginTop:'3px', textAlign:'center', wordBreak:'break-all', lineHeight:'1.3',
       }}>
         {solved ? '✓' : ''}{name}
@@ -152,24 +153,39 @@ export default function ProgramWindow({ obj, stageId }) {
 
   // ── 중앙관리장치 활성화 ──
   const [iu8ntPhase, setIu8ntPhase] = useState(null) // null | 'transmitting' | 'complete'
+  const [iu8ntProgress, setIu8ntProgress] = useState(0)
   const audioRef = useRef(null)
   const iu8ntLastClick = useRef(0)
+  const iu8ntIvRef = useRef(null)
+
+  useEffect(() => {
+    if (iu8ntPhase !== 'transmitting') return
+
+    iu8ntIvRef.current = setInterval(() => {
+      setIu8ntProgress(prev => {
+        // 20%까지는 일반 속도로
+        if (prev < 20) return Math.min(20, prev + Math.random() * 4 + 1.5)
+        // 20% 도달 시 100%로 점프
+        clearInterval(iu8ntIvRef.current)
+        setTimeout(() => {
+          if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+          setIu8ntPhase('complete')
+        }, 400)
+        return 100
+      })
+    }, 80)
+
+    return () => clearInterval(iu8ntIvRef.current)
+  }, [iu8ntPhase])
 
   const handleIu8ntDoubleClick = () => {
     if (iu8ntPhase) return
+    setIu8ntProgress(0)
     setIu8ntPhase('transmitting')
 
     const audio = new Audio('/static_noise.flac')
     audioRef.current = audio
     audio.play().catch(() => {})
-
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current = null
-      }
-      setIu8ntPhase('complete')
-    }, 5000)
 
     setTimeout(() => {
       if (stageId < 3) nextStage()
@@ -216,20 +232,59 @@ export default function ProgramWindow({ obj, stageId }) {
 
         {iu8ntPhase && (
           <div style={{
-            position: 'fixed', inset: 0, zIndex: 9999,
-            background: '#000',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 16,
+            position: 'fixed',
+            left: '50%', top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 220,
+            width: 280,
+            background: '#2a2a3e',
+            border: '2px solid #3a3a5a',
+            boxShadow: '4px 4px 0 #000',
           }}>
             <div style={{
-              fontFamily: "'Consolas','Courier New',monospace",
-              fontSize: '13px',
-              color: iu8ntPhase === 'complete' ? '#aaffaa' : '#44aaff',
-              letterSpacing: '0.1em',
-              animation: iu8ntPhase === 'transmitting' ? 'flicker 0.4s infinite' : 'none',
-            }}>
-              {iu8ntPhase === 'transmitting' ? '패킷 전송중...' : '설치가 완료되었습니다. 곧 재부팅 됩니다.'}
+              background: '#4a4a6a',
+              padding: '5px 12px',
+              borderBottom: '1px solid #2a2a3a',
+              fontFamily: "'Segoe UI','Malgun Gothic',sans-serif",
+              fontSize: '11px', color: '#888',
+            }} />
+
+            <div style={{ padding: '16px 14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                <div style={{
+                  width: 32, height: 32,
+                  WebkitMaskImage: 'url(/download_sky.png)',
+                  WebkitMaskSize: '100% 100%',
+                  maskImage: 'url(/download_sky.png)',
+                  maskSize: '100% 100%',
+                  background: '#4a90a3',
+                }} />
+                <span style={{
+                  fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
+                  fontSize: '12px', color: '#aaaacc',
+                }}>
+                  {iu8ntPhase === 'transmitting' ? '패킷 전송 중...' : '설치가 완료되었습니다. 곧 재부팅 됩니다.'}
+                </span>
+              </div>
+
+              <div style={{ height: '6px', background: '#111', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${iu8ntProgress}%`,
+                  background: iu8ntProgress >= 100 ? '#2a7a2a' : '#2244aa',
+                  transition: 'width 0.08s, background 0.3s',
+                  borderRadius: '3px',
+                }} />
+              </div>
+
+              <div style={{
+                marginTop: '6px',
+                display: 'flex', justifyContent: 'space-between',
+                fontFamily: 'monospace', fontSize: '10px', color: '#445566',
+              }}>
+                <span>{Math.floor(iu8ntProgress)}%</span>
+                <span>{iu8ntProgress >= 100 ? '완료' : '전송 중'}</span>
+              </div>
             </div>
           </div>
         )}

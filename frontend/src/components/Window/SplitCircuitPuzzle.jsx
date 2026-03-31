@@ -5,8 +5,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from '../../store/gameStore'
 
+function InlineSvg({ src, width, height }) {
+  const [content, setContent] = useState('')
+  useEffect(() => {
+    setContent('')
+    fetch(src)
+      .then(r => r.text())
+      .then(text => {
+        const resized = text
+          .replace(/(<svg[^>]*)\bwidth="[^"]*"/, `$1width="${width}"`)
+          .replace(/(<svg[^>]*)\bheight="[^"]*"/, `$1height="${height}"`)
+        setContent(resized)
+      })
+      .catch(() => {})
+  }, [src, width, height])
+  return (
+    <div
+      style={{ width, height, lineHeight: 0, pointerEvents: 'none', overflow: 'hidden' }}
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  )
+}
+
 const TH = 26   // 타이틀바 높이
-const SC = 0.5  // 이미지 스케일
+const SC = 1.0  // 이미지 스케일
 
 const PIECES = [
   { src: '/pieces/piece_1.svg', nw: 200, nh: 260 },
@@ -25,21 +47,21 @@ const PIECES_SOLVED = [
 ]
 
 const INIT_POS = [
-  { x: 20,  y: 60  },
-  { x: 135, y: 40  },
-  { x: 290, y: 60  },
-  { x: 405, y: 40  },
-  { x: 150, y: 240 },
+  { x: 20,  y: 50  },
+  { x: 240, y: 30  },
+  { x: 540, y: 50  },
+  { x: 20,  y: 340 },
+  { x: 440, y: 320 },
 ]
 
 // piece_1: boxes[0] / piece_2: boxes[1..5]
 const OVERLAYS = [
-  [{ dx: 75,    dy: 71.5,  boxIdx: 0 }],
-  [{ dx: 25.5,  dy: 106.5, boxIdx: 1 },
-   { dx: 53,    dy: 106.5, boxIdx: 2 },
-   { dx: 80.5,  dy: 106.5, boxIdx: 3 },
-   { dx: 108,   dy: 106.5, boxIdx: 4 },
-   { dx: 135.5, dy: 106.5, boxIdx: 5 }],
+  [{ dx: 150,  dy: 143,  boxIdx: 0 }],
+  [{ dx: 51,   dy: 213,  boxIdx: 1 },
+   { dx: 106,  dy: 213,  boxIdx: 2 },
+   { dx: 161,  dy: 213,  boxIdx: 3 },
+   { dx: 216,  dy: 213,  boxIdx: 4 },
+   { dx: 271,  dy: 213,  boxIdx: 5 }],
   [], [], [],
 ]
 
@@ -88,7 +110,6 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
                       onMouseDown, onClose, overlays, boxes, onToggle }) {
   const dw = Math.round(piece.nw * SC)
   const dh = Math.round(piece.nh * SC)
-  const [imgKey, setImgKey] = useState(0)
 
   return (
     <div
@@ -131,13 +152,7 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
 
       {/* 이미지 + 토글 오버레이 */}
       <div style={{ position: 'relative' }}>
-        <img
-          key={imgKey}
-          src={`${piece.src}?v=${imgKey}`}
-          width={dw} height={dh}
-          style={{ display: 'block', pointerEvents: 'none' }}
-          onError={() => setTimeout(() => setImgKey(k => k + 1), 300)}
-        />
+        <InlineSvg src={piece.src} width={dw} height={dh} />
         {overlays?.map((ov, k) => (
           <ToggleBox
             key={k}
@@ -202,7 +217,7 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
       {centralSolved && (
         <div style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.7)',
+          background: 'rgba(0,0,0,0.6)',
           zIndex: 295,
           pointerEvents: 'none',
         }} />

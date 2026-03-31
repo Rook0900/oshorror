@@ -84,5 +84,10 @@ export const useGameStore = create((set, get) => ({
   clearHorror: () => set({ horrorActive: false, horrorType: null }),
 
   nextStage: () =>
-    set((state) => ({ currentStage: state.currentStage + 1, openWindows: [] })),
+    set((state) => ({
+      currentStage: state.currentStage + 1,
+      openWindows: [],
+      centralDownloaded: false,
+      centralSolved: false,
+    })),
 }))
