@@ -6,6 +6,7 @@ import PuzzleWindow from '../Window/PuzzleWindow'
 import WirePuzzleWindow from '../Window/WirePuzzleWindow'
 import CircuitPuzzleWindow from '../Window/CircuitPuzzleWindow'
 import ProgramWindow from '../Window/ProgramWindow'
+import MoonWindow from '../Window/MoonWindow'
 import { useGameStore } from '../../store/gameStore'
 import { useStage } from '../../hooks/useStage'
 
@@ -22,11 +23,9 @@ const STAGE_FALLBACK = {
   },
   2: {
     objects: [
-      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '기록1.txt', spriteKey: 'note' },
-      { objId: 'NOTE_02', objType: 'NOTE', posX: 80, posY: 200, label: '기록2.txt', spriteKey: 'note' },
-      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 320, label: '암호1', spriteKey: 'file' },
-      { objId: 'FILE_02', objType: 'FILE', posX: 80, posY: 440, label: '암호2', spriteKey: 'file' },
-      { objId: 'PROG_01', objType: 'PROGRAM', posX: 200, posY: 80, label: '프로그램', spriteKey: 'prog' },
+      { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '기록.txt', spriteKey: 'note' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: '사진', spriteKey: 'file' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'Monitoring', spriteKey: 'prog' },
     ],
     bgColor: '#0f0505',
   },
@@ -70,9 +69,9 @@ export default function Desktop({ stageId }) {
   )
   const bgColor = stage?.bgColor || '#0d0d1a'
 
-  // 스테이지 1·3 진입 시 centralkeeper 창 자동 오픈
+  // 스테이지 1·2·3 진입 시 PROG_01 창 자동 오픈
   useEffect(() => {
-    if (stageId === 1 || stageId === 3) openWindow('PROG_01')
+    if (stageId === 1 || stageId === 2 || stageId === 3) openWindow('PROG_01')
   }, [stageId])
 
   const handleIconSingleClick = (objId) => setSelectedIcon(objId)
@@ -117,8 +116,11 @@ export default function Desktop({ stageId }) {
             return <WirePuzzleWindow key={winId} obj={obj} stageId={stageId} />
           return <PuzzleWindow key={winId} obj={obj} stageId={stageId} />
         }
-        if (obj.objType === 'PROGRAM')
+        if (obj.objType === 'PROGRAM') {
+          if (stageId === 2 && obj.objId === 'PROG_01')
+            return <MoonWindow key={winId} obj={obj} />
           return <ProgramWindow key={winId} obj={obj} stageId={stageId} />
+        }
         return null
       })}
 

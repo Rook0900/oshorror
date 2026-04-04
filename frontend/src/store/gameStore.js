@@ -22,9 +22,7 @@ export const useGameStore = create((set, get) => ({
     },
     2: {
       NOTE_01: { opened: false },
-      NOTE_02: { opened: false },
       FILE_01: { opened: false, solved: false },
-      FILE_02: { opened: false, solved: false },
       PROG_01: { unlocked: false, executed: false },
     },
     3: {
@@ -84,5 +82,5 @@ export const useGameStore = create((set, get) => ({
   clearHorror: () => set({ horrorActive: false, horrorType: null }),
 
   nextStage: () =>
-    set((state) => ({ currentStage: state.currentStage + 1, openWindows: [] })),
+    set((state) => ({ currentStage: state.currentStage + 1, openWindows: [], centralSolved: false, centralDownloaded: false })),
 }))
