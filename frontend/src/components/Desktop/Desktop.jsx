@@ -7,6 +7,7 @@ import WirePuzzleWindow from '../Window/WirePuzzleWindow'
 import CircuitPuzzleWindow from '../Window/CircuitPuzzleWindow'
 import ProgramWindow from '../Window/ProgramWindow'
 import MoonWindow from '../Window/MoonWindow'
+import PhotoWindow from '../Window/PhotoWindow'
 import { useGameStore } from '../../store/gameStore'
 import { useStage } from '../../hooks/useStage'
 
@@ -24,8 +25,8 @@ const STAGE_FALLBACK = {
   2: {
     objects: [
       { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '기록.txt', spriteKey: 'note' },
-      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: '사진', spriteKey: 'file' },
-      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'Monitoring', spriteKey: 'prog' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: '사진', spriteKey: 'image_icon' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'Monitoring', spriteKey: 'observe' },
     ],
     bgColor: '#0f0505',
   },
@@ -58,20 +59,25 @@ export default function Desktop({ stageId }) {
   const openWindows = useGameStore((s) => s.openWindows)
   const openWindow = useGameStore((s) => s.openWindow)
   const prog02Activated = useGameStore((s) => s.prog02Activated)
+  const moonFileUnlocked = useGameStore((s) => s.moonFileUnlocked)
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
-  const rawObjects = STAGE_FALLBACK[stageId]?.objects || stage?.objects || []
-  const objects = rawObjects.map(obj =>
-    obj.objId === 'NOTE_01' && prog02Activated
-      ? { ...obj, label: 'execution' }
-      : obj
-  )
+  let rawObjects = STAGE_FALLBACK[stageId]?.objects || stage?.objects || []
+  if (stageId === 2 && moonFileUnlocked) {
+    rawObjects = [...rawObjects, { objId: 'FILE_02', objType: 'FILE', posX: 200, posY: 80, label: 'stars', spriteKey: 'file' }]
+  }
+  const objects = rawObjects.map(obj => {
+    if (obj.objId === 'NOTE_01' && prog02Activated) {
+      return { ...obj, label: stageId === 2 ? '안내문' : 'execution' }
+    }
+    return obj
+  })
   const bgColor = stage?.bgColor || '#0d0d1a'
 
-  // 스테이지 1·2·3 진입 시 PROG_01 창 자동 오픈
+  // 스테이지 1·3 진입 시 PROG_01 창 자동 오픈 (2는 자동 오픈 안함)
   useEffect(() => {
-    if (stageId === 1 || stageId === 2 || stageId === 3) openWindow('PROG_01')
+    if (stageId === 1 || stageId === 3) openWindow('PROG_01')
   }, [stageId])
 
   const handleIconSingleClick = (objId) => setSelectedIcon(objId)
@@ -112,6 +118,8 @@ export default function Desktop({ stageId }) {
         if (obj.objType === 'FILE') {
           if (stageId === 1 && obj.objId === 'FILE_01')
             return <CircuitPuzzleWindow key={winId} obj={obj} stageId={stageId} />
+          if (stageId === 2 && obj.objId === 'FILE_01')
+            return <PhotoWindow key={winId} obj={obj} />
           if (stageId === 3 && obj.objId === 'FILE_01')
             return <WirePuzzleWindow key={winId} obj={obj} stageId={stageId} />
           return <PuzzleWindow key={winId} obj={obj} stageId={stageId} />

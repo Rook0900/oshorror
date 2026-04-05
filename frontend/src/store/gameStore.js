@@ -8,10 +8,12 @@ export const useGameStore = create((set, get) => ({
   centralDownloaded: false,
   centralSolved: false,
   prog02Activated: false,
+  moonFileUnlocked: false,
 
   setCentralDownloaded: () => set({ centralDownloaded: true }),
   setCentralSolved: () => set({ centralSolved: true }),
   activateProg02: () => set({ prog02Activated: true }),
+  unlockMoonFile: () => set({ moonFileUnlocked: true }),
 
   stages: {
     1: {

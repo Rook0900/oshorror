@@ -41,7 +41,11 @@
       "Bash(curl -s http://localhost:8080/api/stages/1)",
       "Bash(start chrome:*)",
       "Bash(ls c:/Users/UNIONE07/Desktop/asdf/oshorror/stage1/piece_*.svg)",
-      "Bash(ls -la c:/Users/UNIONE07/Desktop/asdf/oshorror/frontend/public/piece_*.svg)"
+      "Bash(ls -la c:/Users/UNIONE07/Desktop/asdf/oshorror/frontend/public/piece_*.svg)",
+      "Bash(npm run:*)",
+      "Bash(pip install:*)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3:*)"
     ]
   }
 }
