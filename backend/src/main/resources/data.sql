@@ -42,15 +42,12 @@ bolt, belle');
 
 INSERT INTO hint_text (id, stage_id, note_id, content)
 VALUES (2, 2, 'NOTE_01',
-'[파일1 힌트]
+'===========================================
 
-△ ○ □ △
-○ □ △ ○
-□ △ ○ □
+중앙관리장치로 인해 패킷 소스가 전송 되었습니다.
+monitoring으로 인해 직접 관측이 가능합니다.
 
-패턴을 찾아라.
-첫 번째 줄의 순서가 답이다.
-1=△, 2=○, 3=□');
+===========================================');
 
 INSERT INTO hint_text (id, stage_id, note_id, content)
 VALUES (3, 2, 'NOTE_02',

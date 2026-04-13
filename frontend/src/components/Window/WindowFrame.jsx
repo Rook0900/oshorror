@@ -5,7 +5,7 @@ export default function WindowFrame({ title, windowId, children, initialPos, dis
   const { pos, onMouseDown } = useDrag(initialPos || { x: 200, y: 150 })
   const closeWindow = useGameStore((s) => s.closeWindow)
   const focusWindow = useGameStore((s) => s.focusWindow)
-  const zIndex = useGameStore((s) => s.openWindows.indexOf(windowId))
+  const zIndex = useGameStore((s) => 200 + s.openWindows.indexOf(windowId))
 
   return (
     <div

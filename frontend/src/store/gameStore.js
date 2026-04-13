@@ -8,10 +8,12 @@ export const useGameStore = create((set, get) => ({
   centralDownloaded: false,
   centralSolved: false,
   prog02Activated: false,
+  moonFileUnlocked: false,
 
   setCentralDownloaded: () => set({ centralDownloaded: true }),
   setCentralSolved: () => set({ centralSolved: true }),
   activateProg02: () => set({ prog02Activated: true }),
+  unlockMoonFile: () => set({ moonFileUnlocked: true }),
 
   stages: {
     1: {
@@ -22,9 +24,7 @@ export const useGameStore = create((set, get) => ({
     },
     2: {
       NOTE_01: { opened: false },
-      NOTE_02: { opened: false },
       FILE_01: { opened: false, solved: false },
-      FILE_02: { opened: false, solved: false },
       PROG_01: { unlocked: false, executed: false },
     },
     3: {
@@ -34,6 +34,12 @@ export const useGameStore = create((set, get) => ({
       PROG_02: { unlocked: false, executed: false },
     },
   },
+
+  monitoringX: null,
+  setMonitoringX: (x) => set({ monitoringX: x }),
+
+  noticeUnlocked: false,
+  unlockNotice: () => set({ noticeUnlocked: true }),
 
   circuitBoxes: [0, 0, 0],
   setCircuitBoxes: (boxes) => set({ circuitBoxes: boxes }),

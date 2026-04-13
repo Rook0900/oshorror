@@ -20,13 +20,7 @@ const SPRITES = {
     <RetryImg src="/document_icon.svg" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
   ),
   file: (
-    <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
-      <rect width="8" height="8" fill="#2a2a4a"/>
-      <rect x="1" y="2" width="5" height="5" fill="#aa6622"/>
-      <rect x="1" y="1" width="3" height="2" fill="#cc8833"/>
-      <rect x="4" y="1" width="2" height="1" fill="#cc8833"/>
-      <rect x="2" y="4" width="3" height="1" fill="#ffcc88"/>
-    </svg>
+    <RetryImg src="/folder_icon.svg" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
   ),
   prog: (
     <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
@@ -40,6 +34,12 @@ const SPRITES = {
   ),
   folder: (
     <RetryImg src="/folder_icon.svg" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
+  ),
+  observe: (
+    <RetryImg src="/observe.png" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
+  ),
+  image_icon: (
+    <RetryImg src="/image_icon.png" width={52} height={52} style={{ imageRendering: 'pixelated' }} />
   ),
   prog_locked: (
     <svg width="52" height="52" viewBox="0 0 8 8" style={{ imageRendering: 'pixelated' }}>
@@ -57,8 +57,9 @@ export default function DesktopIcon({ obj, stageId, selected, onSingleClick, onD
   const stages = useGameStore((s) => s.stages)
 
   const isProgram = obj.objType === 'PROGRAM'
-  // 스테이지 1·3의 centralkeeper·중앙관리장치.exe는 항상 클릭 가능
-  const stage3SpecialProg = (stageId === 1 || stageId === 3) && (obj.objId === 'PROG_01' || obj.objId === 'PROG_02')
+  // 스테이지 1·2·3의 PROG_01, 스테이지 1·3의 PROG_02는 항상 클릭 가능
+  const stage3SpecialProg = (stageId === 1 || stageId === 2 || stageId === 3) && obj.objId === 'PROG_01'
+    || (stageId === 1 || stageId === 3) && obj.objId === 'PROG_02'
   const locked = isProgram && !isUnlocked(stageId, obj.objId) && !stage3SpecialProg
   const solved = obj.objType === 'FILE' && stages[stageId]?.[obj.objId]?.solved
 

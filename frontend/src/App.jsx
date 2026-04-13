@@ -48,7 +48,7 @@ function App() {
       {centralSolved && (
         <div style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(0,0,0,0.5)',
           zIndex: 100,
           pointerEvents: 'none',
           transition: 'opacity 0.5s',

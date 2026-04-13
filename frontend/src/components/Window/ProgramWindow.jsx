@@ -5,13 +5,13 @@ import SplitCircuitPuzzle from './SplitCircuitPuzzle'
 import { useGameStore } from '../../store/gameStore'
 
 function RetryImg({ src, width, height, style }) {
-  const [key, setKey] = useState(0)
+  const [retry, setRetry] = useState(0)
   return (
     <img
-      key={key}
-      src={`${src}?v=${key}`}
+      key={retry}
+      src={src}
       width={width} height={height} style={style}
-      onError={() => setTimeout(() => setKey(k => k + 1), 300)}
+      onError={() => setTimeout(() => setRetry(k => k + 1), 500)}
     />
   )
 }
@@ -160,18 +160,24 @@ export default function ProgramWindow({ obj, stageId }) {
 
   useEffect(() => {
     if (iu8ntPhase !== 'transmitting') return
+    let hitTwenty = false
 
     iu8ntIvRef.current = setInterval(() => {
       setIu8ntProgress(prev => {
-        // 20%까지는 일반 속도로
         if (prev < 20) return Math.min(20, prev + Math.random() * 4 + 1.5)
-        // 20% 도달 시 100%로 점프
-        clearInterval(iu8ntIvRef.current)
-        setTimeout(() => {
-          if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
-          setIu8ntPhase('complete')
-        }, 400)
-        return 100
+        // 20% 도달 시 3초 대기 후 100%로 점프
+        if (!hitTwenty) {
+          hitTwenty = true
+          clearInterval(iu8ntIvRef.current)
+          setTimeout(() => {
+            setIu8ntProgress(100)
+            setTimeout(() => {
+              if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+              setIu8ntPhase('complete')
+            }, 400)
+          }, 3000)
+        }
+        return 20
       })
     }, 80)
 

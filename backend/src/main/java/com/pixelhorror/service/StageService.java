@@ -9,6 +9,10 @@ import com.pixelhorror.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +62,13 @@ public class StageService {
     }
 
     public String getHintText(Long stageId, String noteId) {
+        if (stageId == 2 && "NOTE_01".equals(noteId)) {
+            try {
+                Path contextPath = Paths.get("../context").toAbsolutePath().normalize();
+                String content = Files.readString(contextPath);
+                if (!content.isBlank()) return content;
+            } catch (IOException ignored) {}
+        }
         return hintTextRepository.findByStageIdAndNoteId(stageId, noteId)
             .map(h -> h.getContent())
             .orElse("힌트를 찾을 수 없습니다.");

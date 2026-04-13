@@ -42,6 +42,7 @@
       "Bash(start chrome:*)",
       "Bash(ls c:/Users/UNIONE07/Desktop/asdf/oshorror/stage1/piece_*.svg)",
       "Bash(ls -la c:/Users/UNIONE07/Desktop/asdf/oshorror/frontend/public/piece_*.svg)",
+<<<<<<< HEAD
       "Bash(java -version)",
       "Bash(javac -version)",
       "Bash(winget --version)",
@@ -69,6 +70,12 @@
       "Bash(./gradlew bootRun --info)",
       "Bash(timeout 40 ./gradlew bootRun)",
       "Bash(powershell.exe -Command \"Get-Process -Id \\(Get-NetTCPConnection -LocalPort 8080\\).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force\")"
+=======
+      "Bash(npm run:*)",
+      "Bash(pip install:*)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3:*)"
+>>>>>>> 2701c34b2496625f068eef752563e90c67bc3457
     ]
   }
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="180" viewBox="0 0 1000 180">
+  <rect width="1000" height="180" fill="white"/>
+  <text
+    x="500"
+    y="108"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="58"
+    fill="black"
+    text-anchor="middle"
+    dominant-baseline="auto"
+    letter-spacing="4"
+  >27 / 9 / 12</text>
+</svg>
