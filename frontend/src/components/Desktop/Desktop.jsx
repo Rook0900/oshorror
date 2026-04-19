@@ -63,6 +63,7 @@ export default function Desktop({ stageId }) {
   const prog02Activated = useGameStore((s) => s.prog02Activated)
   const moonFileUnlocked = useGameStore((s) => s.moonFileUnlocked)
   const noticeUnlocked = useGameStore((s) => s.noticeUnlocked)
+  const centralSolved = useGameStore((s) => s.centralSolved)
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
@@ -76,6 +77,9 @@ export default function Desktop({ stageId }) {
   const objects = rawObjects.map(obj => {
     if (obj.objId === 'NOTE_01' && prog02Activated) {
       return { ...obj, label: stageId === 2 ? '안내문' : 'execution' }
+    }
+    if (obj.objId === 'PROG_02' && stageId === 1 && centralSolved) {
+      return { ...obj, label: 'immediately' }
     }
     return obj
   })

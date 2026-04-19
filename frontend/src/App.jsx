@@ -7,6 +7,29 @@ import './styles/pixel.css'
 const clickAudio = new Audio('/click.mp3')
 const CLICK_THROTTLE = 80
 
+function DevStageSelector() {
+  const currentStage = useGameStore((s) => s.currentStage)
+  const jumpToStage = useGameStore((s) => s.jumpToStage)
+  if (!import.meta.env.DEV) return null
+  return (
+    <div style={{
+      position: 'fixed', bottom: 36, right: 8, zIndex: 9999,
+      display: 'flex', gap: 4, background: 'rgba(0,0,0,0.7)',
+      padding: '4px 6px', borderRadius: 4,
+    }}>
+      {[1, 2].map((s) => (
+        <button key={s} onClick={() => jumpToStage(s)} style={{
+          fontFamily: 'monospace', fontSize: 11, cursor: 'pointer',
+          padding: '2px 8px', border: '1px solid #555',
+          background: currentStage === s ? '#446' : '#222',
+          color: currentStage === s ? '#aaf' : '#888',
+          borderRadius: 3,
+        }}>S{s}</button>
+      ))}
+    </div>
+  )
+}
+
 function App() {
   const currentStage = useGameStore((s) => s.currentStage)
   const centralSolved = useGameStore((s) => s.centralSolved)
@@ -45,6 +68,7 @@ function App() {
     <div className="app-root">
       <Desktop stageId={currentStage} />
       <HorrorOverlay />
+      <DevStageSelector />
       {centralSolved && (
         <div style={{
           position: 'fixed', inset: 0,

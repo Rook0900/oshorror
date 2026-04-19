@@ -58,8 +58,8 @@ export default function CircuitPuzzleWindow({ obj, stageId }) {
           <div style={{ position: 'relative', display: 'inline-block' }}>
             {imgSrc
               ? <img src={imgSrc} alt="circuit puzzle" draggable={false}
-                  style={{ display: 'block', width: '500px', userSelect: 'none' }} />
-              : <div style={{ width: 500, height: 368, background: '#dde4f0' }} />
+                  style={{ display: 'block', width: '340px', userSelect: 'none' }} />
+              : <div style={{ width: 340, height: 250, background: '#dde4f0' }} />
             }
             {BOX_POSITIONS.map((pos, j) => (
               <div

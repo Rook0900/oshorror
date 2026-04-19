@@ -37,7 +37,7 @@ VALUES (1, 1, 'NOTE_01',
 필요 시 제공된 주소값을 참고하여 관리 절차를 진행하시기 바랍니다.
 
 중요 설비 주소값:
-unknown_888.exe, Luna
+u_888nt.exe, Luna
 bolt, belle');
 
 INSERT INTO hint_text (id, stage_id, note_id, content)

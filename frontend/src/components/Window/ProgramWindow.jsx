@@ -164,8 +164,8 @@ export default function ProgramWindow({ obj, stageId }) {
 
     iu8ntIvRef.current = setInterval(() => {
       setIu8ntProgress(prev => {
-        if (prev < 20) return Math.min(20, prev + Math.random() * 4 + 1.5)
-        // 20% 도달 시 3초 대기 후 100%로 점프
+        if (prev < 17) return Math.min(17, prev + Math.random() * 4 + 1.5)
+        // 17% 근처에서 미세하게 흔들리며 대기, 3초 후 100%로 점프
         if (!hitTwenty) {
           hitTwenty = true
           clearInterval(iu8ntIvRef.current)
@@ -177,7 +177,7 @@ export default function ProgramWindow({ obj, stageId }) {
             }, 400)
           }, 3000)
         }
-        return 20
+        return 17 + (Math.random() * 1.5 - 0.75)
       })
     }, 80)
 
@@ -356,6 +356,16 @@ export default function ProgramWindow({ obj, stageId }) {
             </div>
           </div>
         </WindowFrame>
+
+        {/* 어두움 오버레이 — solved 이후 창 닫아도 유지 */}
+        {solved && (
+          <div style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            zIndex: 295,
+            pointerEvents: 'none',
+          }} />
+        )}
 
         {/* 파일별 개별 창 — 클릭한 파일만 열림 */}
         {anyOpen && (

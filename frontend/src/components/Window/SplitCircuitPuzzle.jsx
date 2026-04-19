@@ -28,7 +28,7 @@ function InlineSvg({ src, width, height }) {
 }
 
 const TH = 26   // 타이틀바 높이
-const SC = 1.0  // 이미지 스케일
+const SC = 0.65  // 이미지 스케일
 
 const PIECES = [
   { src: '/pieces/piece_1.svg', nw: 200, nh: 260 },
@@ -156,7 +156,7 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
         {overlays?.map((ov, k) => (
           <ToggleBox
             key={k}
-            dx={ov.dx} dy={ov.dy}
+            dx={ov.dx * SC} dy={ov.dy * SC}
             value={boxes[ov.boxIdx]}
             onToggle={() => onToggle(ov.boxIdx)}
           />
@@ -214,22 +214,13 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
 
   return (
     <>
-      {centralSolved && (
-        <div style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.6)',
-          zIndex: 295,
-          pointerEvents: 'none',
-        }} />
-      )}
-      {[0, 1, 2, 3, 4].map(i => {
+{[0, 1, 2, 3, 4].map(i => {
         if (!openFiles[i]) return null
-        const overlapping = isOverlapping(i)
         return (
           <FileWindow
             key={i}
             pos={positions[i]}
-            showTitle={!overlapping}
+            showTitle={true}
             filename={filenames[i]}
             piece={activePieces[i]}
             zIndex={290 + zOrder.indexOf(i)}

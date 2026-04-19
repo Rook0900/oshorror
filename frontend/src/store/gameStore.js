@@ -96,4 +96,38 @@ export const useGameStore = create((set, get) => ({
       centralDownloaded: false,
       centralSolved: false,
     })),
+
+  jumpToStage: (stageId) =>
+    set({
+      currentStage: stageId,
+      openWindows: [],
+      centralDownloaded: false,
+      centralSolved: false,
+      prog02Activated: false,
+      moonFileUnlocked: false,
+      noticeUnlocked: false,
+      horrorActive: false,
+      horrorType: null,
+      circuitBoxes: [0, 0, 0],
+      monitoringX: null,
+      stages: {
+        1: {
+          NOTE_01: { opened: false },
+          FILE_01: { opened: false, solved: false },
+          PROG_01: { unlocked: false, executed: false },
+          PROG_02: { unlocked: false, executed: false },
+        },
+        2: {
+          NOTE_01: { opened: false },
+          FILE_01: { opened: false, solved: false },
+          PROG_01: { unlocked: false, executed: false },
+        },
+        3: {
+          NOTE_01: { opened: false },
+          FILE_01: { opened: false, solved: false },
+          PROG_01: { unlocked: false, executed: false },
+          PROG_02: { unlocked: false, executed: false },
+        },
+      },
+    }),
 }))

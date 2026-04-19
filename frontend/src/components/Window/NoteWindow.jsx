@@ -16,7 +16,7 @@ const FALLBACK_HINTS = {
 필요 시 제공된 주소값을 참고하여 관리 절차를 진행하시기 바랍니다.
 
 중요 설비 주소값:
-unknown_888.exe, Luna
+u_888nt.exe, Luna
 bolt, belle`,
   },
   2: {
@@ -57,17 +57,25 @@ function getVisiblePositions(line, lineIdx, lastIdx, secondLastIdx, isExecution)
       chars.forEach((ch, j) => { if (ch === 't') visible.add(j) })
     }
   } else {
-    // execution 상태: 둘째줄 i 하나 / 마지막전줄 u·n·8 각 하나 / 마지막 t 하나
-    if (lineIdx === 1) {
-      let shown = false
-      chars.forEach((ch, j) => { if (ch === 'i' && !shown) { visible.add(j); shown = true } })
-    } else if (lineIdx === secondLastIdx) {
-      let uShown = false, nShown = false, eightShown = false
+    // execution 상태: 첫줄 본·다 / 둘째줄 면·i 하나 / 마지막전줄 u·n·8 각 하나 / 마지막 t 하나
+    if (lineIdx === 0) {
+      chars.forEach((ch, j) => { if (ch === '본' || ch === '다') visible.add(j) })
+    } else if (lineIdx === 1) {
+      let iShown = false
       chars.forEach((ch, j) => {
-        if (ch === 'u' && !uShown) { visible.add(j); uShown = true }
-        else if (ch === 'n' && !nShown) { visible.add(j); nShown = true }
-        else if (ch === '8' && !eightShown) { visible.add(j); eightShown = true }
+        if (ch === '면') visible.add(j)
+        if (ch === 'i' && !iShown) { visible.add(j); iShown = true }
       })
+    } else if (lineIdx === secondLastIdx) {
+      let uIdx = -1, eightIdx = -1, nIdx = -1
+      for (let j = 0; j < chars.length; j++) {
+        if (chars[j] === 'u' && uIdx === -1) { uIdx = j }
+        else if (chars[j] === '8' && uIdx !== -1 && eightIdx === -1) { eightIdx = j }
+        else if (chars[j] === 'n' && eightIdx !== -1 && nIdx === -1) { nIdx = j }
+      }
+      if (uIdx >= 0) visible.add(uIdx)
+      if (eightIdx >= 0) visible.add(eightIdx)
+      if (nIdx >= 0) visible.add(nIdx)
     } else if (lineIdx === lastIdx) {
       let shown = false
       chars.forEach((ch, j) => { if (ch === 't' && !shown) { visible.add(j); shown = true } })
