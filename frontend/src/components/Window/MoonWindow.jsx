@@ -15,7 +15,7 @@ const PHASE_NAMES = [
 
 // 연속적인 phaseT(0.0~8.0)를 받아 부드럽게 달 위상을 렌더링
 function MoonSVG({ phaseT }) {
-  const size = 100
+  const size = 72
   const r = 45
   const cx = size / 2
   const cy = size / 2
@@ -126,10 +126,12 @@ export default function MoonWindow({ obj }) {
 
   const closeWindow = useGameStore((s) => s.closeWindow)
   const focusWindow = useGameStore((s) => s.focusWindow)
-  const zIndex = useGameStore((s) => s.openWindows.indexOf(obj.objId))
+  const setWindowRect = useGameStore((s) => s.setWindowRect)
+  const zIndex = useGameStore((s) => 200 + s.openWindows.indexOf(obj.objId))
   const moonFileUnlocked = useGameStore((s) => s.moonFileUnlocked)
   const unlockMoonFile = useGameStore((s) => s.unlockMoonFile)
   const setMonitoringX = useGameStore((s) => s.setMonitoringX)
+  const divRef = useRef(null)
 
   const phase = getMoonPhase(pos.x)       // 게임 로직용 이산값
   const phaseT = getMoonPhaseT(pos.x)     // 렌더링용 연속값
@@ -138,6 +140,16 @@ export default function MoonWindow({ obj }) {
   useEffect(() => {
     setMonitoringX(pos.x)
   }, [pos.x])
+
+  useEffect(() => {
+    if (!divRef.current) return
+    const { width, height } = divRef.current.getBoundingClientRect()
+    setWindowRect('MOON_WINDOW', { x: pos.x, y: pos.y, w: width, h: height })
+  }, [pos])
+
+  useEffect(() => {
+    return () => setWindowRect('MOON_WINDOW', null)
+  }, [])
 
   useEffect(() => {
     if (phase === 5 && !moonFileUnlocked) {
@@ -169,9 +181,11 @@ export default function MoonWindow({ obj }) {
 
   return (
     <div
+      ref={divRef}
       className="window-frame"
       style={{ left: pos.x, top: pos.y, zIndex, minWidth: 140 }}
-      onMouseDown={(e) => { focusWindow(obj.objId); onMouseDown(e) }}
+      onMouseDownCapture={() => focusWindow(obj.objId)}
+      onMouseDown={onMouseDown}
     >
       <div className="window-titlebar">
         <span className="title-text">Monitoring</span>
@@ -180,7 +194,7 @@ export default function MoonWindow({ obj }) {
       <div className="window-content" style={{
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        padding: '16px 20px', background: '#0a0202', gap: 8,
+        padding: '10px 14px', background: '#0a0202', gap: 6,
       }}>
         <MoonSVG phaseT={phaseT} />
       </div>

@@ -28,21 +28,31 @@ const NoteSprite = () => (
   <img src="/document_icon.svg" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
 )
 
-let subZCounter = 400
-
-// 드래그 가능한 서브 창
-function SubWindow({ title, onClose, initialPos, children }) {
+// 드래그 가능한 서브 창 (전역 openWindows 시스템에 통합)
+function SubWindow({ title, windowId, onClose, initialPos, dimmed, children }) {
   const [pos, setPos] = useState(initialPos)
-  const [zIndex, setZIndex] = useState(() => ++subZCounter)
   const dragging = useRef(false)
   const offset = useRef({ x: 0, y: 0 })
+  const divRef = useRef(null)
 
-  const bringToFront = useCallback(() => {
-    setZIndex(++subZCounter)
-  }, [])
+  const focusWindow = useGameStore((s) => s.focusWindow)
+  const openWindow = useGameStore((s) => s.openWindow)
+  const closeWindow = useGameStore((s) => s.closeWindow)
+  const setWindowRect = useGameStore((s) => s.setWindowRect)
+  const zIndex = useGameStore((s) => 200 + s.openWindows.indexOf(windowId))
+
+  useEffect(() => {
+    openWindow(windowId)
+    return () => { closeWindow(windowId); setWindowRect(windowId, null) }
+  }, [windowId])
+
+  useEffect(() => {
+    if (!divRef.current) return
+    const { width, height } = divRef.current.getBoundingClientRect()
+    setWindowRect(windowId, { x: pos.x, y: pos.y, w: width, h: height })
+  }, [pos, windowId])
 
   const onMouseDown = useCallback((e) => {
-    bringToFront()
     if (!e.target.closest('.sw-titlebar')) return
     offset.current.x = e.clientX - pos.x
     offset.current.y = e.clientY - pos.y
@@ -61,15 +71,22 @@ function SubWindow({ title, onClose, initialPos, children }) {
     window.addEventListener('mouseup', onUp)
   }, [pos])
 
+  const handleClose = () => {
+    closeWindow(windowId)
+    onClose()
+  }
+
   return (
     <div
+      ref={divRef}
       className="window-frame"
-      style={{ left: pos.x, top: pos.y, zIndex, minWidth: 180 }}
+      style={{ left: pos.x, top: pos.y, zIndex, minWidth: 180, opacity: dimmed ? 0.45 : 1, transition: 'opacity 0.3s' }}
+      onMouseDownCapture={() => focusWindow(windowId)}
       onMouseDown={onMouseDown}
     >
       <div className="window-titlebar sw-titlebar">
         <span className="title-text">{title}</span>
-        <button className="window-close-btn" onClick={onClose}>x</button>
+        <button className="window-close-btn" onClick={handleClose}>x</button>
       </div>
       <div className="window-content">
         {children}
@@ -133,6 +150,14 @@ export default function StarsWindow({ obj }) {
   const noticeUnlocked = useGameStore((s) => s.noticeUnlocked)
   const unlockNotice = useGameStore((s) => s.unlockNotice)
 
+  const vegaRect = useGameStore((s) => s.windowRects['STARS_VEGA'])
+  const cancerRect = useGameStore((s) => s.windowRects['NOTICE_PHOTO'])
+  const openWindows = useGameStore((s) => s.openWindows)
+  const vegaCancerOverlap = vegaRect && cancerRect &&
+    vegaRect.x < cancerRect.x + cancerRect.w && vegaRect.x + vegaRect.w > cancerRect.x &&
+    vegaRect.y < cancerRect.y + cancerRect.h && vegaRect.y + vegaRect.h > cancerRect.y
+  const vegaIsFront = openWindows.indexOf('STARS_VEGA') > openWindows.indexOf('NOTICE_PHOTO')
+
   const constellationIdx = getConstellationIndex(monitoringX)
   const constellationSrc = CONSTELLATION_SVGS[constellationIdx]
 
@@ -189,23 +214,23 @@ export default function StarsWindow({ obj }) {
       </WindowFrame>
 
       {openProg && (
-        <SubWindow title="vega" onClose={() => setOpenProg(false)} initialPos={{ x: 420, y: 200 }}>
+        <SubWindow title="vega" windowId="STARS_VEGA" onClose={() => setOpenProg(false)} initialPos={{ x: 420, y: 200 }} dimmed={vegaCancerOverlap && vegaIsFront}>
           <div style={{
             background: '#000',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 8, minWidth: 200,
+            padding: 6, minWidth: 160,
           }}>
             <img
               src={constellationSrc}
               alt="constellation"
-              style={{ width: 240, height: 240, display: 'block' }}
+              style={{ width: 180, height: 180, display: 'block' }}
             />
           </div>
         </SubWindow>
       )}
 
       {openNote && (
-        <SubWindow title="메모장 — 기록.txt" onClose={() => setOpenNote(false)} initialPos={{ x: 460, y: 230 }}>
+        <SubWindow title="메모장 — 기록.txt" windowId="STARS_NOTE" onClose={() => setOpenNote(false)} initialPos={{ x: 460, y: 230 }}>
           <div className="note-window">
             <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif", whiteSpace: 'pre-wrap' }}>
               {`하염없이 비춰지던 원을\n눈으로서 모든 빛깔을 차지한다.\n\n거대한 무쇳덩이가\n모든 것들을 삼키고\n\n작은 속삭임은 어둠 위에서야\n비로소 들려진다.`}
@@ -214,8 +239,8 @@ export default function StarsWindow({ obj }) {
         </SubWindow>
       )}
 
-{openPhoto && (
-        <SubWindow title="사진 — photo" onClose={() => setOpenPhoto(false)} initialPos={{ x: 380, y: 260 }}>
+      {openPhoto && (
+        <SubWindow title="사진 — photo" windowId="STARS_PHOTO" onClose={() => setOpenPhoto(false)} initialPos={{ x: 380, y: 260 }}>
           <div style={{
             background: '#000',
             display: 'flex', alignItems: 'center', justifyContent: 'center',

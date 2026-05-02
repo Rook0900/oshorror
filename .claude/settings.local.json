@@ -42,7 +42,6 @@
       "Bash(start chrome:*)",
       "Bash(ls c:/Users/UNIONE07/Desktop/asdf/oshorror/stage1/piece_*.svg)",
       "Bash(ls -la c:/Users/UNIONE07/Desktop/asdf/oshorror/frontend/public/piece_*.svg)",
-<<<<<<< HEAD
       "Bash(java -version)",
       "Bash(javac -version)",
       "Bash(winget --version)",
@@ -62,20 +61,17 @@
       "Bash(do)",
       "Bash(echo \"=== piece_$i.svg ===\")",
       "Read(//c/Users/User/Desktop/oshorror/oshorror/frontend/public/pieces/**)",
-      "Bash(python3:*)",
       "Bash(export JAVA_HOME=\"/c/Program Files/Microsoft/jdk-17.0.18.8-hotspot\" export PATH=\"$JAVA_HOME/bin:$PATH\" ./gradlew bootRun --stacktrace)",
       "Bash(export JAVA_HOME=\"/c/Program Files/Microsoft/jdk-17.0.18.8-hotspot\" export PATH=\"$JAVA_HOME/bin:$PATH\" ./gradlew bootRun --info)",
       "Bash(find /c/Users/User/Desktop/oshorror/oshorror/backend/src -name application*.properties -o -name application*.yml)",
       "Bash(xargs grep:*)",
       "Bash(./gradlew bootRun --info)",
       "Bash(timeout 40 ./gradlew bootRun)",
-      "Bash(powershell.exe -Command \"Get-Process -Id \\(Get-NetTCPConnection -LocalPort 8080\\).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force\")"
-=======
+      "Bash(powershell.exe -Command \"Get-Process -Id \\(Get-NetTCPConnection -LocalPort 8080\\).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(npm run:*)",
       "Bash(pip install:*)",
       "Bash(python3 -c ':*)",
       "Bash(python3:*)"
->>>>>>> 2701c34b2496625f068eef752563e90c67bc3457
     ]
   }
 }

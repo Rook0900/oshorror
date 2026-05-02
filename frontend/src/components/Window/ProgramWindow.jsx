@@ -18,7 +18,6 @@ function RetryImg({ src, width, height, style }) {
 
 const HORROR_EVENTS = { 1: 'blackout', 2: 'distort', 3: 'glitch' }
 
-// centralkeeper에 설치되는 파일 목록
 const INSTALLED_FILES = [
   'sys_patch_01.dat',
   'keeper_v2.bin',
@@ -27,7 +26,6 @@ const INSTALLED_FILES = [
   'unknown_888.exe',
 ]
 
-// connect 파일 아이콘
 function ConnectFileIcon({ onDoubleClick }) {
   const [last, setLast] = useState(0)
   const handleClick = () => {
@@ -57,7 +55,6 @@ function ConnectFileIcon({ onDoubleClick }) {
   )
 }
 
-// 설치된 파일 아이콘
 function InstalledFileIcon({ name, index, solved, onDoubleClick }) {
   const lastClick = useRef(0)
   const handleClick = () => {
@@ -87,6 +84,67 @@ function InstalledFileIcon({ name, index, solved, onDoubleClick }) {
   )
 }
 
+function IU8NTPopup({ phase, progress }) {
+  const openWindow = useGameStore(s => s.openWindow)
+  const closeWindow = useGameStore(s => s.closeWindow)
+  const focusWindow = useGameStore(s => s.focusWindow)
+  const zIndex = useGameStore(s => 200 + s.openWindows.indexOf('IU8NT_DIALOG'))
+  useEffect(() => {
+    openWindow('IU8NT_DIALOG')
+    return () => closeWindow('IU8NT_DIALOG')
+  }, [])
+  return (
+    <div
+      onMouseDownCapture={() => focusWindow('IU8NT_DIALOG')}
+      style={{
+        position: 'fixed',
+        left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex,
+        width: 280,
+        background: '#2a2a3e',
+        border: '2px solid #3a3a5a',
+        boxShadow: '4px 4px 0 #000',
+      }}>
+      <div style={{
+        background: '#4a4a6a',
+        padding: '5px 12px',
+        borderBottom: '1px solid #2a2a3a',
+        fontFamily: "'Segoe UI','Malgun Gothic',sans-serif",
+        fontSize: '11px', color: '#888',
+      }} />
+      <div style={{ padding: '16px 14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <div style={{
+            width: 32, height: 32,
+            WebkitMaskImage: 'url(/download_sky.png)',
+            WebkitMaskSize: '100% 100%',
+            maskImage: 'url(/download_sky.png)',
+            maskSize: '100% 100%',
+            background: '#4a90a3',
+          }} />
+          <span style={{ fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif", fontSize: '12px', color: '#aaaacc' }}>
+            {phase === 'transmitting' ? '패킷 전송 중...' : '설치가 완료되었습니다. 곧 재부팅 됩니다.'}
+          </span>
+        </div>
+        <div style={{ height: '6px', background: '#111', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{
+            height: '100%',
+            width: `${progress}%`,
+            background: progress >= 100 ? '#2a7a2a' : '#2244aa',
+            transition: 'width 0.08s, background 0.3s',
+            borderRadius: '3px',
+          }} />
+        </div>
+        <div style={{ marginTop: '6px', display: 'flex', justifyContent: 'space-between', fontFamily: 'monospace', fontSize: '10px', color: '#445566' }}>
+          <span>{Math.floor(progress)}%</span>
+          <span>{progress >= 100 ? '완료' : '전송 중'}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 export default function ProgramWindow({ obj, stageId }) {
   const isUnlocked          = useGameStore(s => s.isUnlocked)
@@ -108,7 +166,6 @@ export default function ProgramWindow({ obj, stageId }) {
   }, [isCentralkeeper, unlocked])
 
   const [connectOpen, setConnectOpen] = useState(false)
-  // 파일별 개별 열림 상태 (5개)
   const [openFiles, setOpenFiles] = useState([false, false, false, false, false])
   const downloadDone = centralDownloaded
 
@@ -119,7 +176,6 @@ export default function ProgramWindow({ obj, stageId }) {
   const [boxes, setBoxes] = useState([0, 0, 0, 0, 0, 0])
   const [solved, setSolved] = useState(false)
 
-  // 공포 트리거 (centralkeeper·스테이지 전환 아닌 경우)
   useEffect(() => {
     if (!unlocked || isErrorProg || isCentralkeeper) return
     triggerHorror(HORROR_EVENTS[stageId] || 'glitch')
@@ -152,7 +208,7 @@ export default function ProgramWindow({ obj, stageId }) {
   }
 
   // ── 중앙관리장치 활성화 ──
-  const [iu8ntPhase, setIu8ntPhase] = useState(null) // null | 'transmitting' | 'complete'
+  const [iu8ntPhase, setIu8ntPhase] = useState(null)
   const [iu8ntProgress, setIu8ntProgress] = useState(0)
   const audioRef = useRef(null)
   const iu8ntLastClick = useRef(0)
@@ -165,7 +221,6 @@ export default function ProgramWindow({ obj, stageId }) {
     iu8ntIvRef.current = setInterval(() => {
       setIu8ntProgress(prev => {
         if (prev < 17) return Math.min(17, prev + Math.random() * 4 + 1.5)
-        // 17% 근처에서 미세하게 흔들리며 대기, 3초 후 100%로 점프
         if (!hitTwenty) {
           hitTwenty = true
           clearInterval(iu8ntIvRef.current)
@@ -236,64 +291,7 @@ export default function ProgramWindow({ obj, stageId }) {
           </div>
         </WindowFrame>
 
-        {iu8ntPhase && (
-          <div style={{
-            position: 'fixed',
-            left: '50%', top: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 220,
-            width: 280,
-            background: '#2a2a3e',
-            border: '2px solid #3a3a5a',
-            boxShadow: '4px 4px 0 #000',
-          }}>
-            <div style={{
-              background: '#4a4a6a',
-              padding: '5px 12px',
-              borderBottom: '1px solid #2a2a3a',
-              fontFamily: "'Segoe UI','Malgun Gothic',sans-serif",
-              fontSize: '11px', color: '#888',
-            }} />
-
-            <div style={{ padding: '16px 14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                <div style={{
-                  width: 32, height: 32,
-                  WebkitMaskImage: 'url(/download_sky.png)',
-                  WebkitMaskSize: '100% 100%',
-                  maskImage: 'url(/download_sky.png)',
-                  maskSize: '100% 100%',
-                  background: '#4a90a3',
-                }} />
-                <span style={{
-                  fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
-                  fontSize: '12px', color: '#aaaacc',
-                }}>
-                  {iu8ntPhase === 'transmitting' ? '패킷 전송 중...' : '설치가 완료되었습니다. 곧 재부팅 됩니다.'}
-                </span>
-              </div>
-
-              <div style={{ height: '6px', background: '#111', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${iu8ntProgress}%`,
-                  background: iu8ntProgress >= 100 ? '#2a7a2a' : '#2244aa',
-                  transition: 'width 0.08s, background 0.3s',
-                  borderRadius: '3px',
-                }} />
-              </div>
-
-              <div style={{
-                marginTop: '6px',
-                display: 'flex', justifyContent: 'space-between',
-                fontFamily: 'monospace', fontSize: '10px', color: '#445566',
-              }}>
-                <span>{Math.floor(iu8ntProgress)}%</span>
-                <span>{iu8ntProgress >= 100 ? '완료' : '전송 중'}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {iu8ntPhase && <IU8NTPopup phase={iu8ntPhase} progress={iu8ntProgress} />}
       </>
     )
   }
@@ -357,7 +355,6 @@ export default function ProgramWindow({ obj, stageId }) {
           </div>
         </WindowFrame>
 
-        {/* 어두움 오버레이 — solved 이후 창 닫아도 유지 */}
         {solved && (
           <div style={{
             position: 'fixed', inset: 0,
@@ -367,7 +364,6 @@ export default function ProgramWindow({ obj, stageId }) {
           }} />
         )}
 
-        {/* 파일별 개별 창 — 클릭한 파일만 열림 */}
         {anyOpen && (
           <SplitCircuitPuzzle
             boxes={boxes}

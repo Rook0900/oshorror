@@ -89,15 +89,15 @@ body {
   position: fixed;
   background: #2a2a3e;
   border: 2px solid #555;
-  box-shadow: 4px 4px 0 #000;
-  min-width: 300px;
-  min-height: 200px;
+  box-shadow: 3px 3px 0 #000;
+  min-width: 200px;
+  min-height: 120px;
   z-index: 100;
 }
 
 .window-titlebar {
   background: #4a4a6a;
-  padding: 6px 8px;
+  padding: 4px 6px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -110,19 +110,19 @@ body {
 }
 
 .window-close-btn {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   background: #1a1a2a;
   border: 2px solid #2e2e42;
   color: #666688;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: monospace;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
 }
 
 .window-close-btn:hover {
@@ -138,28 +138,28 @@ body {
 }
 
 .window-content {
-  padding: 12px;
+  padding: 8px;
   color: #ccc;
   font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
 }
 
 /* 메모장 창 */
 .note-window {
-  max-height: 300px;
+  max-height: 220px;
   overflow-y: scroll;
-  width: 280px;
+  width: 220px;
 }
 
 .note-window .note-text {
   font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
-  font-size: 13px !important;
-  line-height: 1.9;
+  font-size: 11px !important;
+  line-height: 1.7;
   color: #111111;
   white-space: pre-wrap;
   background: #e8e8e8;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #bbb;
-  min-height: 150px;
+  min-height: 100px;
 }
 
 /* 퍼즐 창 설명문 — 한글 포함 */
@@ -315,16 +315,16 @@ body {
 .wire-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 16px;
-  width: 200px;
+  gap: 8px;
+  margin-top: 10px;
+  width: 150px;
 }
 
 .wire-bulb {
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border: 3px solid #555;
+  border: 2px solid #555;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -348,7 +348,7 @@ body {
 
 .wire-bulb-label {
   font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
+  font-size: 10px;
   color: #222;
   pointer-events: none;
 }

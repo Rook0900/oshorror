@@ -2,8 +2,10 @@
 // - 창이 겹치면 타이틀바(이름·닫기) 숨김, 이미지만 표시
 // - 정답: boxes = [1, 0,0,1,1,1]  → 다음 스테이지
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useGameStore } from '../../store/gameStore'
+
+const SPLIT_IDS = [0, 1, 2, 3, 4].map(i => `SPLIT_${i}`)
 
 function InlineSvg({ src, width, height }) {
   const [content, setContent] = useState('')
@@ -106,13 +108,16 @@ function ToggleBox({ dx, dy, value, onToggle }) {
   )
 }
 
-function FileWindow({ pos, showTitle, filename, piece, zIndex,
+function FileWindow({ pos, showTitle, filename, piece, windowId,
                       onMouseDown, onClose, overlays, boxes, onToggle }) {
+  const focusWindow = useGameStore((s) => s.focusWindow)
+  const zIndex = useGameStore((s) => 200 + s.openWindows.indexOf(windowId))
   const dw = Math.round(piece.nw * SC)
   const dh = Math.round(piece.nh * SC)
 
   return (
     <div
+      onMouseDownCapture={() => focusWindow(windowId)}
       onMouseDown={onMouseDown}
       style={{
         position: 'fixed',
@@ -168,6 +173,8 @@ function FileWindow({ pos, showTitle, filename, piece, zIndex,
 
 export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onCloseFile, filenames, onSolved }) {
   const centralSolved = useGameStore(s => s.centralSolved)
+  const openWindow = useGameStore(s => s.openWindow)
+  const closeWindow = useGameStore(s => s.closeWindow)
   const isSolved = boxes.length >= 6 && boxes.every((v, i) => v === CORRECT[i])
   const activePieces = centralSolved ? PIECES_SOLVED : PIECES
 
@@ -175,17 +182,24 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
     if (isSolved) onSolved()
   }, [boxes])
 
+  // openFiles 변화에 따라 전역 openWindows에 등록/해제
+  useEffect(() => {
+    openFiles.forEach((open, i) => {
+      if (open) openWindow(SPLIT_IDS[i])
+      else closeWindow(SPLIT_IDS[i])
+    })
+  }, [openFiles])
+
+  // 언마운트 시 전체 해제
+  useEffect(() => {
+    return () => { SPLIT_IDS.forEach(id => closeWindow(id)) }
+  }, [])
+
   const [positions, setPositions] = useState(() => INIT_POS.map(p => ({ ...p })))
-  const [zOrder, setZOrder] = useState([0, 1, 2, 3, 4])
 
-  const bringToFront = (i) =>
-    setZOrder(prev => [...prev.filter(x => x !== i), i])
-
-  // 드래그 핸들러 (창별)
   const offsetRef = useRef({ x: 0, y: 0 })
   const makeDragHandler = (i) => (e) => {
     if (e.button !== 0) return
-    bringToFront(i)
     offsetRef.current = { x: e.clientX - positions[i].x, y: e.clientY - positions[i].y }
     const onMove = (ev) => {
       setPositions(prev => prev.map((p, k) =>
@@ -200,7 +214,6 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
     window.addEventListener('mouseup', onUp)
   }
 
-  // 겹침 판단
   const isOverlapping = (i) => {
     const si = winSize(i)
     const pi = positions[i]
@@ -214,7 +227,7 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
 
   return (
     <>
-{[0, 1, 2, 3, 4].map(i => {
+      {[0, 1, 2, 3, 4].map(i => {
         if (!openFiles[i]) return null
         return (
           <FileWindow
@@ -223,7 +236,7 @@ export default function SplitCircuitPuzzle({ boxes, onToggle, openFiles, onClose
             showTitle={true}
             filename={filenames[i]}
             piece={activePieces[i]}
-            zIndex={290 + zOrder.indexOf(i)}
+            windowId={SPLIT_IDS[i]}
             onMouseDown={makeDragHandler(i)}
             onClose={() => onCloseFile(i)}
             overlays={OVERLAYS[i]}

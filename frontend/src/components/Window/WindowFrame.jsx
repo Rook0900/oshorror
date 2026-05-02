@@ -11,7 +11,8 @@ export default function WindowFrame({ title, windowId, children, initialPos, dis
     <div
       className="window-frame"
       style={{ left: pos.x, top: pos.y, zIndex }}
-      onMouseDown={(e) => { focusWindow(windowId); onMouseDown(e) }}
+      onMouseDownCapture={() => focusWindow(windowId)}
+      onMouseDown={onMouseDown}
     >
       <div className="window-titlebar">
         <span className="title-text">{title}</span>

@@ -44,6 +44,10 @@ export const useGameStore = create((set, get) => ({
   circuitBoxes: [0, 0, 0],
   setCircuitBoxes: (boxes) => set({ circuitBoxes: boxes }),
 
+  windowRects: {},
+  setWindowRect: (id, rect) =>
+    set((state) => ({ windowRects: { ...state.windowRects, [id]: rect } })),
+
   openWindow: (windowId) =>
     set((state) => ({
       openWindows: state.openWindows.includes(windowId)

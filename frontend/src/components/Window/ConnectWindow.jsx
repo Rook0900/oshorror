@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
+import { useGameStore } from '../../store/gameStore'
 
 export default function ConnectWindow({ onDownloadComplete }) {
+  const openWindow = useGameStore(s => s.openWindow)
+  const closeWindow = useGameStore(s => s.closeWindow)
+  const focusWindow = useGameStore(s => s.focusWindow)
+  const zIndex = useGameStore(s => 200 + s.openWindows.indexOf('CONNECT_DIALOG'))
+
+  useEffect(() => {
+    openWindow('CONNECT_DIALOG')
+    return () => closeWindow('CONNECT_DIALOG')
+  }, [])
   const [progress, setProgress] = useState(0)
   const [started, setStarted] = useState(false)
   const ivRef = useRef(null)
@@ -21,16 +31,18 @@ export default function ConnectWindow({ onDownloadComplete }) {
   }, [started])
 
   return (
-    <div style={{
-      position: 'fixed',
-      left: '50%', top: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: 220,
-      width: 280,
-      background: '#2a2a3e',
-      border: '2px solid #3a3a5a',
-      boxShadow: '4px 4px 0 #000',
-    }}>
+    <div
+      onMouseDownCapture={() => focusWindow('CONNECT_DIALOG')}
+      style={{
+        position: 'fixed',
+        left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex,
+        width: 280,
+        background: '#2a2a3e',
+        border: '2px solid #3a3a5a',
+        boxShadow: '4px 4px 0 #000',
+      }}>
       <div style={{
         background: '#4a4a6a',
         padding: '5px 12px',

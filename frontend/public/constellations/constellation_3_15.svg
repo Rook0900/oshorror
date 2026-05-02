@@ -1,39 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="240" viewBox="0 0 280 240">
 
 <rect width="280" height="240" fill="#ffffff" rx="12"/>
-<line x1="80" y1="90" x2="100" y2="60" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="100" y1="60" x2="130" y2="50" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="130" y1="50" x2="155" y2="70" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="155" y1="70" x2="160" y2="100" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="160" y1="100" x2="140" y2="130" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="140" y1="130" x2="100" y2="140" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="100" y1="140" x2="75" y2="120" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="75" y1="120" x2="80" y2="90" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="160" y1="100" x2="75" y2="120" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="100" y1="60" x2="55" y2="70" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="140" y1="130" x2="175" y2="145" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<line x1="100" y1="140" x2="120" y2="170" stroke="#000" stroke-width="1.6" opacity="0.7"/>
-<circle cx="80" cy="90" r="7" fill="#000" opacity="0.12"/>
-<circle cx="80" cy="90" r="5" fill="#000"/>
-<circle cx="100" cy="60" r="7" fill="#000" opacity="0.12"/>
-<circle cx="100" cy="60" r="3" fill="#000"/>
-<circle cx="130" cy="50" r="7" fill="#000" opacity="0.12"/>
-<circle cx="130" cy="50" r="3" fill="#000"/>
-<circle cx="155" cy="70" r="7" fill="#000" opacity="0.12"/>
-<circle cx="155" cy="70" r="3" fill="#000"/>
-<circle cx="160" cy="100" r="7" fill="#000" opacity="0.12"/>
-<circle cx="160" cy="100" r="3" fill="#000"/>
-<circle cx="140" cy="130" r="7" fill="#000" opacity="0.12"/>
-<circle cx="140" cy="130" r="3" fill="#000"/>
-<circle cx="100" cy="140" r="7" fill="#000" opacity="0.12"/>
-<circle cx="100" cy="140" r="3" fill="#000"/>
-<circle cx="75" cy="120" r="7" fill="#000" opacity="0.12"/>
-<circle cx="75" cy="120" r="3" fill="#000"/>
-<circle cx="55" cy="70" r="7" fill="#000" opacity="0.12"/>
-<circle cx="55" cy="70" r="3" fill="#000"/>
-<circle cx="175" cy="145" r="7" fill="#000" opacity="0.12"/>
-<circle cx="175" cy="145" r="3" fill="#000"/>
-<circle cx="120" cy="170" r="7" fill="#000" opacity="0.12"/>
-<circle cx="120" cy="170" r="3" fill="#000"/>
+<line x1="80" y1="90" x2="100" y2="60" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="100" y1="60" x2="130" y2="50" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="130" y1="50" x2="155" y2="70" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="155" y1="70" x2="160" y2="100" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="160" y1="100" x2="140" y2="130" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="140" y1="130" x2="100" y2="140" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="100" y1="140" x2="75" y2="120" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="75" y1="120" x2="80" y2="90" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="160" y1="100" x2="75" y2="120" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="100" y1="60" x2="55" y2="70" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="140" y1="130" x2="175" y2="145" stroke="#aaaaaa" stroke-width="1.4"/>
+<line x1="100" y1="140" x2="120" y2="170" stroke="#aaaaaa" stroke-width="1.4"/>
+<circle cx="80" cy="90" r="7" fill="#777"/>
+<circle cx="100" cy="60" r="5" fill="#999"/>
+<circle cx="130" cy="50" r="5" fill="#999"/>
+<circle cx="155" cy="70" r="5" fill="#999"/>
+<circle cx="160" cy="100" r="5" fill="#999"/>
+<circle cx="140" cy="130" r="5" fill="#999"/>
+<circle cx="100" cy="140" r="5" fill="#999"/>
+<circle cx="75" cy="120" r="5" fill="#999"/>
+<circle cx="55" cy="70" r="5" fill="#999"/>
+<circle cx="175" cy="145" r="5" fill="#999"/>
+<circle cx="120" cy="170" r="5" fill="#999"/>
 <text x="14" y="228" font-size="17" font-weight="700" fill="#000000" font-family="sans-serif" letter-spacing="3">3 / 15</text>
 </svg>
