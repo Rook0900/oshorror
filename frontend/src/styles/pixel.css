@@ -361,6 +361,15 @@ body {
   filter: grayscale(1);
 }
 
+@keyframes moonTextGlimmer {
+  0%, 100% { opacity: 1; text-shadow: 0 0 6px #87ceeb88; }
+  50% { opacity: 0.7; text-shadow: 0 0 14px #87ceebcc; }
+}
+
+.moon-note-text {
+  animation: moonTextGlimmer 2.4s ease-in-out infinite;
+}
+
 .lock-icon {
   position: absolute;
   top: 2px;

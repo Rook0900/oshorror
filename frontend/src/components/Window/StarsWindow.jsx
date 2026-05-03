@@ -152,7 +152,12 @@ export default function StarsWindow({ obj }) {
 
   const vegaRect = useGameStore((s) => s.windowRects['STARS_VEGA'])
   const cancerRect = useGameStore((s) => s.windowRects['NOTICE_PHOTO'])
+  const moonRect = useGameStore((s) => s.windowRects['MOON_WINDOW'])
+  const starsNoteRect = useGameStore((s) => s.windowRects['STARS_NOTE'])
   const openWindows = useGameStore((s) => s.openWindows)
+  const isMoonOverNote = moonRect && starsNoteRect &&
+    moonRect.x < starsNoteRect.x + starsNoteRect.w && moonRect.x + moonRect.w > starsNoteRect.x &&
+    moonRect.y < starsNoteRect.y + starsNoteRect.h && moonRect.y + moonRect.h > starsNoteRect.y
   const vegaCancerOverlap = vegaRect && cancerRect &&
     vegaRect.x < cancerRect.x + cancerRect.w && vegaRect.x + vegaRect.w > cancerRect.x &&
     vegaRect.y < cancerRect.y + cancerRect.h && vegaRect.y + vegaRect.h > cancerRect.y
@@ -232,8 +237,11 @@ export default function StarsWindow({ obj }) {
       {openNote && (
         <SubWindow title="메모장 — 기록.txt" windowId="STARS_NOTE" onClose={() => setOpenNote(false)} initialPos={{ x: 460, y: 230 }}>
           <div className="note-window">
-            <div className="note-text" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif", whiteSpace: 'pre-wrap' }}>
-              {`하염없이 비춰지던 원을\n눈으로서 모든 빛깔을 차지한다.\n\n거대한 무쇳덩이가\n모든 것들을 삼키고\n\n작은 속삭임은 어둠 위에서야\n비로소 들려진다.`}
+            <div className={`note-text${isMoonOverNote ? ' moon-note-text' : ''}`} style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif", whiteSpace: 'pre-wrap', color: isMoonOverNote ? '#87ceeb' : undefined }}>
+              {isMoonOverNote
+                ? `달빛을 훔치는 도둑이 왔어,\n\n그림자가 길게 드리우고\n\n전력의 맥박을 이어 붙이면\n\n잠시 숨을 고를 틈이 생길 거야`
+                : `하염없이 비춰지던 원을\n눈으로서 모든 빛깔을 차지한다.\n\n거대한 무쇳덩이가\n모든 것들을 삼키고\n\n작은 속삭임은 어둠 위에서야\n비로소 들려진다.`
+              }
             </div>
           </div>
         </SubWindow>
@@ -249,7 +257,7 @@ export default function StarsWindow({ obj }) {
             <img
               src="/stars_photo.svg"
               alt="photo"
-              style={{ width: '100%', maxWidth: 600, display: 'block' }}
+              style={{ width: 300, height: 'auto', display: 'block' }}
             />
           </div>
         </SubWindow>

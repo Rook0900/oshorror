@@ -1,22 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="280" height="240" viewBox="0 0 280 240">
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="280" height="240" viewBox="0 0 280 240">
 
 <rect width="280" height="240" fill="#ffffff" rx="12"/>
-<line x1="80" y1="80" x2="120" y2="60" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="120" y1="60" x2="160" y2="75" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="160" y1="75" x2="175" y2="110" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="175" y1="110" x2="155" y2="145" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="155" y1="145" x2="120" y2="155" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="120" y1="155" x2="85" y2="140" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="85" y1="140" x2="70" y2="110" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="70" y1="110" x2="80" y2="80" stroke="#aaaaaa" stroke-width="1.4"/>
-<line x1="80" y1="80" x2="85" y2="140" stroke="#aaaaaa" stroke-width="1.4"/>
-<circle cx="80" cy="80" r="7" fill="#777"/>
-<circle cx="120" cy="60" r="5" fill="#999"/>
-<circle cx="160" cy="75" r="5" fill="#999"/>
-<circle cx="175" cy="110" r="5" fill="#999"/>
-<circle cx="155" cy="145" r="5" fill="#999"/>
-<circle cx="120" cy="155" r="5" fill="#999"/>
-<circle cx="85" cy="140" r="5" fill="#999"/>
-<circle cx="70" cy="110" r="5" fill="#999"/>
+<line x1="80" y1="80" x2="120" y2="60" stroke="#222222" stroke-width="1.4"/>
+<line x1="120" y1="60" x2="160" y2="75" stroke="#222222" stroke-width="1.4"/>
+<line x1="160" y1="75" x2="175" y2="110" stroke="#222222" stroke-width="1.4"/>
+<line x1="175" y1="110" x2="155" y2="145" stroke="#222222" stroke-width="1.4"/>
+<line x1="155" y1="145" x2="120" y2="155" stroke="#222222" stroke-width="1.4"/>
+<line x1="120" y1="155" x2="85" y2="140" stroke="#222222" stroke-width="1.4"/>
+<line x1="85" y1="140" x2="70" y2="110" stroke="#222222" stroke-width="1.4"/>
+<line x1="70" y1="110" x2="80" y2="80" stroke="#222222" stroke-width="1.4"/>
+<line x1="80" y1="80" x2="85" y2="140" stroke="#222222" stroke-width="1.4"/>
+<circle cx="80" cy="80" r="4" fill="#222222"/>
+<circle cx="120" cy="60" r="3" fill="#222222"/>
+<circle cx="160" cy="75" r="3" fill="#222222"/>
+<circle cx="175" cy="110" r="3" fill="#222222"/>
+<circle cx="155" cy="145" r="3" fill="#222222"/>
+<circle cx="120" cy="155" r="3" fill="#222222"/>
+<circle cx="85" cy="140" r="3" fill="#222222"/>
+<circle cx="70" cy="110" r="3" fill="#222222"/>
 <text x="14" y="228" font-size="17" font-weight="700" fill="#000000" font-family="sans-serif" letter-spacing="3">3 / 30</text>
 </svg>

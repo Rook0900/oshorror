@@ -2,16 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import WindowFrame from './WindowFrame'
 import { useGameStore } from '../../store/gameStore'
 
-// 시퀀스: 6 → 30 → 12 → 18 (인덱스 기준)
-const NOTICE_SEQUENCE = [1, 9, 3, 5]
-
-function getConstellationIndex(x) {
-  if (x === null) return 0
-  const ratio = Math.max(0, Math.min(1, x / window.innerWidth))
-  return Math.min(9, Math.floor(ratio * 10))
-}
-
-function SubWindow({ title, windowId, onClose, initialPos, dimmed, children }) {
+function SubWindow({ title, windowId, onClose, initialPos, children }) {
   const [pos, setPos] = useState(initialPos)
   const dragging = useRef(false)
   const offset = useRef({ x: 0, y: 0 })
@@ -53,22 +44,17 @@ function SubWindow({ title, windowId, onClose, initialPos, dimmed, children }) {
     window.addEventListener('mouseup', onUp)
   }, [pos])
 
-  const handleClose = () => {
-    closeWindow(windowId)
-    onClose()
-  }
-
   return (
     <div
       ref={divRef}
       className="window-frame"
-      style={{ left: pos.x, top: pos.y, zIndex, minWidth: 180, opacity: dimmed ? 0.45 : 1, transition: 'opacity 0.3s' }}
+      style={{ left: pos.x, top: pos.y, zIndex, minWidth: 180 }}
       onMouseDownCapture={() => focusWindow(windowId)}
       onMouseDown={onMouseDown}
     >
       <div className="window-titlebar sw-titlebar">
         <span className="title-text">{title}</span>
-        <button className="window-close-btn" onClick={handleClose}>x</button>
+        <button className="window-close-btn" onClick={() => { closeWindow(windowId); onClose() }}>x</button>
       </div>
       <div className="window-content">
         {children}
@@ -107,97 +93,42 @@ function FolderIcon({ sprite, label, onDoubleClick }) {
   )
 }
 
-const NoteSprite = () => (
-  <img src="/document_icon.svg" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
-)
-
 const PhotoSprite = () => (
   <img src="/image_icon.png" width={40} height={40} style={{ imageRendering: 'pixelated' }} />
 )
 
-function rectsOverlap(a, b) {
-  if (!a || !b) return false
-  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-}
-
-export default function NoticeWindow({ obj }) {
-  const [openNote, setOpenNote] = useState(false)
+export default function Le5grWindow({ obj }) {
   const [openPhoto, setOpenPhoto] = useState(false)
-  const moonRect = useGameStore((s) => s.windowRects['MOON_WINDOW'])
-  const cancerRect = useGameStore((s) => s.windowRects['NOTICE_PHOTO'])
-  const vegaRect = useGameStore((s) => s.windowRects['STARS_VEGA'])
-  const openWindows = useGameStore((s) => s.openWindows)
-  const isMoonOverlap = rectsOverlap(moonRect, cancerRect)
-  const isVegaOverlap = rectsOverlap(vegaRect, cancerRect)
-  const isOverlapping = isMoonOverlap
-  const cancerIsFront = openWindows.indexOf('NOTICE_PHOTO') > openWindows.indexOf('STARS_VEGA')
-
-  const monitoringX = useGameStore((s) => s.monitoringX)
-  const le5grUnlocked = useGameStore((s) => s.le5grUnlocked)
-  const unlockLe5gr = useGameStore((s) => s.unlockLe5gr)
-  const constellationIdx = getConstellationIndex(monitoringX)
-  const noticeSeqStep = useRef(0)
-  const noticeTimerRef = useRef(null)
-
-  useEffect(() => {
-    if (le5grUnlocked) return
-    clearTimeout(noticeTimerRef.current)
-    noticeTimerRef.current = setTimeout(() => {
-      if (constellationIdx === NOTICE_SEQUENCE[noticeSeqStep.current]) {
-        noticeSeqStep.current += 1
-        if (noticeSeqStep.current === NOTICE_SEQUENCE.length) {
-          unlockLe5gr()
-          noticeSeqStep.current = 0
-        }
-      } else {
-        noticeSeqStep.current = constellationIdx === NOTICE_SEQUENCE[0] ? 1 : 0
-      }
-    }, 800)
-    return () => clearTimeout(noticeTimerRef.current)
-  }, [constellationIdx])
 
   return (
     <>
       <WindowFrame
         title={`폴더 — ${obj.label}`}
         windowId={obj.objId}
-        initialPos={{ x: 340, y: 180 }}
+        initialPos={{ x: 360, y: 160 }}
       >
         <div style={{
           display: 'flex', flexDirection: 'row', gap: 4,
-          padding: '10px 8px', background: '#0a0202', minWidth: 200,
+          padding: '10px 8px', background: '#0a0202', minWidth: 160,
         }}>
           <FolderIcon
-            sprite={<NoteSprite />}
-            label="double"
-            onDoubleClick={() => setOpenNote(true)}
-          />
-          <FolderIcon
             sprite={<PhotoSprite />}
-            label="cancer"
+            label="warn"
             onDoubleClick={() => setOpenPhoto(true)}
           />
         </div>
       </WindowFrame>
 
-      {openNote && (
-        <SubWindow title="안내문 — double" windowId="NOTICE_NOTE" onClose={() => setOpenNote(false)} initialPos={{ x: 440, y: 230 }}>
-          <div style={{ background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
-            <img src="/moonlight_text.svg" alt="double" style={{ width: '100%', maxWidth: 400, display: 'block' }} />
-          </div>
-        </SubWindow>
-      )}
-
       {openPhoto && (
-        <SubWindow title="사진 — cancer" windowId="NOTICE_PHOTO" onClose={() => setOpenPhoto(false)} initialPos={{ x: 400, y: 260 }} dimmed={isVegaOverlap && cancerIsFront}>
+        <SubWindow title="사진 — warn" windowId="LE5GR_PHOTO" onClose={() => setOpenPhoto(false)} initialPos={{ x: 440, y: 220 }}>
           <div style={{
             background: '#000',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 6, minWidth: 160,
+            padding: 8,
           }}>
             <img
-              src={isOverlapping ? '/constellation_numbered.svg' : '/constellation_no_number.svg'}
-              alt="cancer"
+              src="/light_thief.svg"
+              alt="warn"
               style={{ width: 180, height: 180, display: 'block' }}
             />
           </div>

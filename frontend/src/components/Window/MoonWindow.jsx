@@ -118,9 +118,14 @@ function getMoonPhase(x) {
   return 7
 }
 
+// 초승달→상현→상현망간→보름→하현망간→하현→그믐→삭
+// 초승달(얇은 초승), 상현(반달), 상현망간(볼록), 보름, 하현망간(볼록), 하현(반달), 그믐(얇은 초승), 삭
+const FINAL_PHASE_SEQUENCE = [0.5, 2, 3.5, 4, 4.5, 6, 7.5, 0.01]
+
 export default function MoonWindow({ obj }) {
   const INITIAL_POS = { x: Math.floor(window.innerWidth * 3 / 8), y: 150 }
   const [pos, setPos] = useState(INITIAL_POS)
+  const [autoPhaseT, setAutoPhaseT] = useState(null)
   const dragging = useRef(false)
   const offset = useRef({ x: 0, y: 0 })
 
@@ -131,6 +136,10 @@ export default function MoonWindow({ obj }) {
   const moonFileUnlocked = useGameStore((s) => s.moonFileUnlocked)
   const unlockMoonFile = useGameStore((s) => s.unlockMoonFile)
   const setMonitoringX = useGameStore((s) => s.setMonitoringX)
+  const finalSequenceActive = useGameStore((s) => s.finalSequenceActive)
+  const finalDisplayActive = useGameStore((s) => s.finalDisplayActive)
+  const activateFinalDisplay = useGameStore((s) => s.activateFinalDisplay)
+  const nextStage = useGameStore((s) => s.nextStage)
   const divRef = useRef(null)
 
   const phase = getMoonPhase(pos.x)       // 게임 로직용 이산값
@@ -160,6 +169,36 @@ export default function MoonWindow({ obj }) {
     return () => clearTimeout(timerRef.current)
   }, [phase, moonFileUnlocked])
 
+  useEffect(() => {
+    if (!finalSequenceActive) return
+
+    const timeouts = []
+    const t5 = setTimeout(() => {
+      activateFinalDisplay()
+      let step = 0
+      const runStep = () => {
+        if (step >= FINAL_PHASE_SEQUENCE.length) {
+          const t = setTimeout(() => {
+            document.body.style.cursor = ''
+            document.body.style.pointerEvents = ''
+            nextStage()
+          }, 800)
+          timeouts.push(t)
+          return
+        }
+        setAutoPhaseT(FINAL_PHASE_SEQUENCE[step])
+        step++
+        const delay = 1000 + Math.random() * 700
+        const t = setTimeout(runStep, delay)
+        timeouts.push(t)
+      }
+      runStep()
+    }, 5000)
+    timeouts.push(t5)
+
+    return () => timeouts.forEach(clearTimeout)
+  }, [finalSequenceActive])
+
   const onMouseDown = useCallback((e) => {
     if (!e.target.closest('.window-titlebar')) return
     offset.current.x = e.clientX - pos.x
@@ -183,7 +222,7 @@ export default function MoonWindow({ obj }) {
     <div
       ref={divRef}
       className="window-frame"
-      style={{ left: pos.x, top: pos.y, zIndex, minWidth: 140 }}
+      style={{ left: pos.x, top: pos.y, zIndex: finalDisplayActive ? 960 : zIndex, minWidth: 140 }}
       onMouseDownCapture={() => focusWindow(obj.objId)}
       onMouseDown={onMouseDown}
     >
@@ -196,7 +235,7 @@ export default function MoonWindow({ obj }) {
         alignItems: 'center', justifyContent: 'center',
         padding: '10px 14px', background: '#0a0202', gap: 6,
       }}>
-        <MoonSVG phaseT={phaseT} />
+        <MoonSVG phaseT={autoPhaseT !== null ? autoPhaseT : phaseT} />
       </div>
     </div>
   )

@@ -41,6 +41,18 @@ export const useGameStore = create((set, get) => ({
   noticeUnlocked: false,
   unlockNotice: () => set({ noticeUnlocked: true }),
 
+  le5grUnlocked: false,
+  unlockLe5gr: () => set((state) => ({
+    le5grUnlocked: true,
+    openWindows: state.openWindows.filter((id) => id !== 'PROG_01'),
+  })),
+
+  finalSequenceActive: false,
+  triggerFinalSequence: () => set({ finalSequenceActive: true }),
+
+  finalDisplayActive: false,
+  activateFinalDisplay: () => set({ finalDisplayActive: true }),
+
   circuitBoxes: [0, 0, 0],
   setCircuitBoxes: (boxes) => set({ circuitBoxes: boxes }),
 
@@ -114,6 +126,9 @@ export const useGameStore = create((set, get) => ({
       horrorType: null,
       circuitBoxes: [0, 0, 0],
       monitoringX: null,
+      le5grUnlocked: false,
+      finalSequenceActive: false,
+      finalDisplayActive: false,
       stages: {
         1: {
           NOTE_01: { opened: false },

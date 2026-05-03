@@ -4,26 +4,26 @@
 <line x1="0" y1="120" x2="280" y2="120" stroke="#bbbbbb" stroke-width="1"/>
 <line x1="40.0" y1="68.3" x2="70.0" y2="48.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
 <line x1="70.0" y1="48.3" x2="100.0" y2="63.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
-<circle cx="40.0" cy="68.3" r="6" fill="#222222"/>
-<circle cx="70.0" cy="48.3" r="4" fill="#222222"/>
-<circle cx="100.0" cy="63.3" r="4" fill="#222222"/>
+<circle cx="40.0" cy="68.3" r="4" fill="#222222"/>
+<circle cx="70.0" cy="48.3" r="3" fill="#222222"/>
+<circle cx="100.0" cy="63.3" r="3" fill="#222222"/>
 <text x="70.0" y="36.3" text-anchor="middle" font-size="13" font-weight="700" fill="#555555" font-family="sans-serif">1</text>
 <line x1="210.0" y1="73.3" x2="180.0" y2="53.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
 <line x1="210.0" y1="73.3" x2="240.0" y2="53.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
-<circle cx="210.0" cy="73.3" r="6" fill="#222222"/>
-<circle cx="180.0" cy="53.3" r="4" fill="#222222"/>
-<circle cx="240.0" cy="53.3" r="4" fill="#222222"/>
+<circle cx="210.0" cy="73.3" r="4" fill="#222222"/>
+<circle cx="180.0" cy="53.3" r="3" fill="#222222"/>
+<circle cx="240.0" cy="53.3" r="3" fill="#222222"/>
 <text x="210.0" y="41.3" text-anchor="middle" font-size="13" font-weight="700" fill="#555555" font-family="sans-serif">4</text>
 <line x1="56.7" y1="181.7" x2="86.7" y2="161.7" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
 <line x1="86.7" y1="161.7" x2="66.7" y2="196.7" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
-<circle cx="56.7" cy="181.7" r="6" fill="#222222"/>
-<circle cx="86.7" cy="161.7" r="4" fill="#222222"/>
-<circle cx="66.7" cy="196.7" r="4" fill="#222222"/>
+<circle cx="56.7" cy="181.7" r="4" fill="#222222"/>
+<circle cx="86.7" cy="161.7" r="3" fill="#222222"/>
+<circle cx="66.7" cy="196.7" r="3" fill="#222222"/>
 <text x="70.0" y="149.7" text-anchor="middle" font-size="13" font-weight="700" fill="#555555" font-family="sans-serif">3</text>
 <line x1="170.0" y1="188.3" x2="210.0" y2="168.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
 <line x1="210.0" y1="168.3" x2="250.0" y2="183.3" stroke="#222222" stroke-width="1.6" opacity="0.9"/>
-<circle cx="170.0" cy="188.3" r="6" fill="#222222"/>
-<circle cx="210.0" cy="168.3" r="4" fill="#222222"/>
-<circle cx="250.0" cy="183.3" r="4" fill="#222222"/>
+<circle cx="170.0" cy="188.3" r="4" fill="#222222"/>
+<circle cx="210.0" cy="168.3" r="3" fill="#222222"/>
+<circle cx="250.0" cy="183.3" r="3" fill="#222222"/>
 <text x="210.0" y="156.3" text-anchor="middle" font-size="13" font-weight="700" fill="#555555" font-family="sans-serif">2</text>
 </svg>

@@ -1,0 +1,25 @@
+<svg width="100%" viewBox="0 0 680 800" xmlns="http://www.w3.org/2000/svg">
+<rect width="680" height="800" fill="#000000"/>
+
+<path d="M295 255 Q270 280 262 320 Q258 360 265 400" fill="none" stroke="#b2b2b2" stroke-width="22" stroke-linecap="round"/>
+<path d="M300 255 Q278 285 272 330 Q268 375 274 415" fill="none" stroke="#b2b2b2" stroke-width="14" stroke-linecap="round"/>
+<path d="M365 255 Q390 280 398 320 Q402 360 395 400" fill="none" stroke="#b2b2b2" stroke-width="22" stroke-linecap="round"/>
+<path d="M360 255 Q382 285 388 330 Q392 375 386 415" fill="none" stroke="#b2b2b2" stroke-width="14" stroke-linecap="round"/>
+<ellipse cx="330" cy="248" rx="36" ry="40" fill="#b2b2b2"/>
+<rect x="324" y="284" width="12" height="22" fill="#b2b2b2"/>
+<path d="M290 305 Q330 298 370 305" fill="none" stroke="#b2b2b2" stroke-width="16" stroke-linecap="round"/>
+<path d="M292 308 Q282 340 280 370 Q280 390 292 400 Q310 408 330 408 Q350 408 368 400 Q380 390 380 370 Q378 340 368 308 Q350 302 330 300 Q310 302 292 308Z" fill="#b2b2b2"/>
+<path d="M292 315 Q268 290 252 265 Q240 245 244 228" fill="none" stroke="#b2b2b2" stroke-width="11" stroke-linecap="round"/>
+<ellipse cx="244" cy="222" rx="9" ry="7" fill="#b2b2b2" transform="rotate(-30 244 222)"/>
+<path d="M238 216 Q232 206 230 200" fill="none" stroke="#b2b2b2" stroke-width="3" stroke-linecap="round"/>
+<path d="M240 213 Q236 202 235 195" fill="none" stroke="#b2b2b2" stroke-width="3" stroke-linecap="round"/>
+<path d="M244 211 Q242 200 242 193" fill="none" stroke="#b2b2b2" stroke-width="3" stroke-linecap="round"/>
+<path d="M248 213 Q248 201 250 195" fill="none" stroke="#b2b2b2" stroke-width="3" stroke-linecap="round"/>
+<path d="M252 216 Q254 205 257 199" fill="none" stroke="#b2b2b2" stroke-width="3" stroke-linecap="round"/>
+<path d="M368 315 Q385 345 390 378 Q392 400 386 420" fill="none" stroke="#b2b2b2" stroke-width="11" stroke-linecap="round"/>
+<ellipse cx="385" cy="425" rx="8" ry="6" fill="#b2b2b2"/>
+<path d="M292 400 Q272 440 258 480 Q245 515 240 550 Q238 570 252 578 Q290 590 330 588 Q370 590 408 578 Q422 570 420 550 Q415 515 402 480 Q388 440 368 400 Q350 408 330 408 Q310 408 292 400Z" fill="#aaaaaa"/>
+<path d="M252 578 Q238 608 244 632 Q260 648 294 638 Q314 628 330 624 Q346 628 366 638 Q400 648 416 632 Q422 608 408 578 Q370 590 330 588 Q290 590 252 578Z" fill="#a0a0a0"/>
+
+<rect x="0" y="0" width="680" height="800" fill="#000000" opacity="0.95"/>
+</svg>

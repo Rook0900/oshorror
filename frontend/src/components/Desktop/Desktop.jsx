@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import DesktopIcon from './DesktopIcon'
 import WindowFrame from '../Window/WindowFrame'
 import NoteWindow from '../Window/NoteWindow'
@@ -10,6 +10,7 @@ import MoonWindow from '../Window/MoonWindow'
 import PhotoWindow from '../Window/PhotoWindow'
 import StarsWindow from '../Window/StarsWindow'
 import NoticeWindow from '../Window/NoticeWindow'
+import Le5grWindow from '../Window/Le5grWindow'
 import { useGameStore } from '../../store/gameStore'
 import { useStage } from '../../hooks/useStage'
 
@@ -63,7 +64,11 @@ export default function Desktop({ stageId }) {
   const prog02Activated = useGameStore((s) => s.prog02Activated)
   const moonFileUnlocked = useGameStore((s) => s.moonFileUnlocked)
   const noticeUnlocked = useGameStore((s) => s.noticeUnlocked)
+  const le5grUnlocked = useGameStore((s) => s.le5grUnlocked)
   const centralSolved = useGameStore((s) => s.centralSolved)
+  const finalSequenceActive = useGameStore((s) => s.finalSequenceActive)
+  const finalDisplayActive = useGameStore((s) => s.finalDisplayActive)
+  const triggerFinalSequence = useGameStore((s) => s.triggerFinalSequence)
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
@@ -72,7 +77,10 @@ export default function Desktop({ stageId }) {
     rawObjects = [...rawObjects, { objId: 'FILE_02', objType: 'FILE', posX: 200, posY: 80, label: 'stars', spriteKey: 'file' }]
   }
   if (stageId === 2 && noticeUnlocked) {
-    rawObjects = [...rawObjects, { objId: 'NOTICE_01', objType: 'FILE', posX: 320, posY: 200, label: 'notice', spriteKey: 'file' }]
+    rawObjects = [...rawObjects, { objId: 'NOTICE_01', objType: 'FILE', posX: 200, posY: 200, label: 'notice', spriteKey: 'file' }]
+  }
+  if (stageId === 2 && le5grUnlocked) {
+    rawObjects = [...rawObjects, { objId: 'LE5GR_01', objType: 'FILE', posX: 320, posY: 80, label: 'Le5gr', spriteKey: 'file' }]
   }
   const objects = rawObjects.map(obj => {
     if (obj.objId === 'NOTE_01' && prog02Activated) {
@@ -88,6 +96,38 @@ export default function Desktop({ stageId }) {
   // 스테이지 1·3 진입 시 PROG_01 창 자동 오픈 (2는 자동 오픈 안함)
   useEffect(() => {
     if (stageId === 1 || stageId === 3) openWindow('PROG_01')
+  }, [stageId])
+
+  useEffect(() => {
+    if (stageId !== 2 || finalSequenceActive) return
+    if (openWindows.includes('LE5GR_PHOTO') && openWindows.includes('PROG_01')) {
+      triggerFinalSequence()
+    }
+  }, [openWindows, stageId, finalSequenceActive])
+
+  // 두 창 동시 열릴 때(finalSequenceActive) 3초 뒤 커서 고정
+  const mousePos = useRef({ x: 0, y: 0 })
+  useEffect(() => {
+    const onMove = (e) => { mousePos.current = { x: e.clientX, y: e.clientY } }
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [])
+
+  useEffect(() => {
+    if (!finalSequenceActive) return
+    const timer = setTimeout(() => {
+      document.documentElement.style.cursor = 'none'
+      document.body.style.pointerEvents = 'none'
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [finalSequenceActive])
+
+  // 다음 스테이지 전환 시 커서 복원
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.cursor = ''
+      document.body.style.pointerEvents = ''
+    }
   }, [stageId])
 
   const handleIconSingleClick = (objId) => setSelectedIcon(objId)
@@ -106,6 +146,13 @@ export default function Desktop({ stageId }) {
 
   return (
     <>
+{/* 검은 오버레이 (달 변환 시작 후) */}
+      {finalDisplayActive && (
+        <div style={{
+          position: 'fixed', inset: 0, background: '#000', zIndex: 950, pointerEvents: 'none',
+        }} />
+      )}
+
       <div className="desktop" style={{ backgroundColor: bgColor }}>
         {objects.map((obj) => (
           <DesktopIcon
@@ -134,6 +181,8 @@ export default function Desktop({ stageId }) {
             return <StarsWindow key={winId} obj={obj} />
           if (stageId === 2 && obj.objId === 'NOTICE_01')
             return <NoticeWindow key={winId} obj={obj} />
+          if (stageId === 2 && obj.objId === 'LE5GR_01')
+            return <Le5grWindow key={winId} obj={obj} />
           if (stageId === 3 && obj.objId === 'FILE_01')
             return <WirePuzzleWindow key={winId} obj={obj} stageId={stageId} />
           return <PuzzleWindow key={winId} obj={obj} stageId={stageId} />
