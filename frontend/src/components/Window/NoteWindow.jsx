@@ -35,6 +35,19 @@ S _ A _ O W
 힌트: 어둠이 드리운 것`,
     NOTICE_01: `(내용 미정)`,
   },
+  3: {
+    NOTE_01: `격납고 에너지 수치 급락 감지.
+centralkeeper 즉시 재부팅 요청.
+
+에너지는 소멸하지 않는다.
+형태가 바뀔 뿐이다.
+
+  Ek + Ep = 일정
+
+마지막 점검 기록:
+전구 6개를 모두 켜 회로를 완성하시오.
+켜진 전구 사이에만 전류가 흐른다.`,
+  },
 }
 
 function getVisiblePositions(line, lineIdx, lastIdx, secondLastIdx, isExecution) {

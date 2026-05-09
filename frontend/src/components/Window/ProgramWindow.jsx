@@ -150,6 +150,7 @@ export default function ProgramWindow({ obj, stageId }) {
   const isUnlocked          = useGameStore(s => s.isUnlocked)
   const triggerHorror       = useGameStore(s => s.triggerHorror)
   const nextStage           = useGameStore(s => s.nextStage)
+  const endGame             = useGameStore(s => s.endGame)
   const centralDownloaded   = useGameStore(s => s.centralDownloaded)
   const setCentralDownloaded = useGameStore(s => s.setCentralDownloaded)
 
@@ -250,6 +251,7 @@ export default function ProgramWindow({ obj, stageId }) {
 
     setTimeout(() => {
       if (stageId < 3) nextStage()
+      else endGame()
     }, 8000)
   }
 

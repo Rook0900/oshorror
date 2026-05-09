@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from './store/gameStore'
 import Desktop from './components/Desktop/Desktop'
 import HorrorOverlay from './components/HorrorEvent/HorrorOverlay'
@@ -17,7 +17,7 @@ function DevStageSelector() {
       display: 'flex', gap: 4, background: 'rgba(0,0,0,0.7)',
       padding: '4px 6px', borderRadius: 4,
     }}>
-      {[1, 2].map((s) => (
+      {[1, 2, 3].map((s) => (
         <button key={s} onClick={() => jumpToStage(s)} style={{
           fontFamily: 'monospace', fontSize: 11, cursor: 'pointer',
           padding: '2px 8px', border: '1px solid #555',
@@ -30,9 +30,65 @@ function DevStageSelector() {
   )
 }
 
+function EndingScreen() {
+  const jumpToStage = useGameStore((s) => s.jumpToStage)
+  const [phase, setPhase] = useState(0)
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 2000)
+    const t2 = setTimeout(() => setPhase(2), 5000)
+    const t3 = setTimeout(() => setPhase(3), 8500)
+    return () => [t1, t2, t3].forEach(clearTimeout)
+  }, [])
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: '#000', zIndex: 9999,
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      gap: 28, fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
+    }}>
+      <div style={{
+        color: '#aaaacc', fontSize: 13, letterSpacing: 2,
+        opacity: phase >= 1 ? 1 : 0, transition: 'opacity 1.5s',
+        textAlign: 'center', lineHeight: 2,
+      }}>
+        시스템 복원 완료.<br />모든 회로 활성화.
+      </div>
+
+      <div style={{
+        color: '#ff4444', fontSize: 11, letterSpacing: 1,
+        opacity: phase >= 2 ? 1 : 0, transition: 'opacity 1.5s',
+        textAlign: 'center', lineHeight: 2.2,
+      }}>
+        .<br />.<br />.<br />
+        당신은 이 건물을 떠날 수 없습니다.<br />
+        처음부터, 그것이 목적이었습니다.
+      </div>
+
+      <div style={{
+        opacity: phase >= 3 ? 1 : 0, transition: 'opacity 1.2s', marginTop: 20,
+      }}>
+        <button
+          onClick={() => jumpToStage(1)}
+          style={{
+            fontFamily: 'monospace', fontSize: 10, cursor: 'pointer',
+            padding: '6px 18px', border: '1px solid #444',
+            background: '#0a0a18', color: '#666',
+            borderRadius: 2, letterSpacing: 1,
+          }}
+        >
+          다시 시작
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const currentStage = useGameStore((s) => s.currentStage)
   const centralSolved = useGameStore((s) => s.centralSolved)
+  const gameEnded = useGameStore((s) => s.gameEnded)
   const lastClickTime = useRef(0)
 
   // 어두움 오버레이 활성 시 클릭 볼륨 감소
@@ -78,6 +134,7 @@ function App() {
           transition: 'opacity 0.5s',
         }} />
       )}
+      {gameEnded && <EndingScreen />}
     </div>
   )
 }

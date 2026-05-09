@@ -11,6 +11,9 @@ import PhotoWindow from '../Window/PhotoWindow'
 import StarsWindow from '../Window/StarsWindow'
 import NoticeWindow from '../Window/NoticeWindow'
 import Le5grWindow from '../Window/Le5grWindow'
+import BinaryConverterWindow from '../Window/BinaryConverterWindow'
+import Stage3IntroDialog from '../Window/Stage3IntroDialog'
+import ClockCanvas from './ClockCanvas'
 import { useGameStore } from '../../store/gameStore'
 import { useStage } from '../../hooks/useStage'
 
@@ -36,9 +39,10 @@ const STAGE_FALLBACK = {
   3: {
     objects: [
       { objId: 'NOTE_01', objType: 'NOTE', posX: 80, posY: 80, label: '노트.txt', spriteKey: 'note' },
-      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: '전기 회로', spriteKey: 'file' },
-      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'centralkeeper', spriteKey: 'prog' },
-      { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 320, label: '중앙관리장치.exe', spriteKey: 'prog' },
+      { objId: 'FILE_01', objType: 'FILE', posX: 80, posY: 200, label: 'binary_hint', spriteKey: 'image_icon' },
+      { objId: 'BINARY_01', objType: 'FILE', posX: 220, posY: 80, label: '이진수 변환기', spriteKey: 'prog' },
+      { objId: 'PROG_01', objType: 'PROGRAM', posX: 80, posY: 320, label: 'switch', spriteKey: 'prog' },
+      { objId: 'PROG_02', objType: 'PROGRAM', posX: 220, posY: 320, label: 'toggle', spriteKey: 'prog' },
     ],
     bgColor: '#02020a',
   },
@@ -69,6 +73,26 @@ export default function Desktop({ stageId }) {
   const finalSequenceActive = useGameStore((s) => s.finalSequenceActive)
   const finalDisplayActive = useGameStore((s) => s.finalDisplayActive)
   const triggerFinalSequence = useGameStore((s) => s.triggerFinalSequence)
+  const stage3IntroDismissed = useGameStore((s) => s.stage3IntroDismissed)
+  const switchOn = useGameStore((s) => s.switchOn)
+  const setSwitchOn = useGameStore((s) => s.setSwitchOn)
+  const switchUnlocked = useGameStore((s) => s.switchUnlocked)
+  const unlockSwitch = useGameStore((s) => s.unlockSwitch)
+  const [clockStopped, setClockStopped] = useState(!switchOn)
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === 'clock-toggle') {
+        setSwitchOn(e.data.on)
+        setClockStopped(!e.data.on)
+      }
+      if (e.data?.type === 'switch-unlock') {
+        unlockSwitch()
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
@@ -93,9 +117,9 @@ export default function Desktop({ stageId }) {
   })
   const bgColor = stage?.bgColor || '#0d0d1a'
 
-  // 스테이지 1·3 진입 시 PROG_01 창 자동 오픈 (2는 자동 오픈 안함)
+  // 스테이지 1 진입 시 PROG_01 창 자동 오픈
   useEffect(() => {
-    if (stageId === 1 || stageId === 3) openWindow('PROG_01')
+    if (stageId === 1) openWindow('PROG_01')
   }, [stageId])
 
   useEffect(() => {
@@ -133,6 +157,7 @@ export default function Desktop({ stageId }) {
   const handleIconSingleClick = (objId) => setSelectedIcon(objId)
   const handleIconDoubleClick = (objId) => {
     setSelectedIcon(objId)
+    if (stageId === 3 && objId === 'PROG_01' && !switchUnlocked) return
     openWindow(objId)
   }
 
@@ -153,7 +178,9 @@ export default function Desktop({ stageId }) {
         }} />
       )}
 
-      <div className="desktop" style={{ backgroundColor: bgColor }}>
+      {stageId === 3 && <ClockCanvas running={!clockStopped} />}
+
+      <div className="desktop" style={{ background: stageId === 3 ? 'transparent' : bgColor }}>
         {objects.map((obj) => (
           <DesktopIcon
             key={obj.objId}
@@ -184,23 +211,64 @@ export default function Desktop({ stageId }) {
           if (stageId === 2 && obj.objId === 'LE5GR_01')
             return <Le5grWindow key={winId} obj={obj} />
           if (stageId === 3 && obj.objId === 'FILE_01')
-            return <WirePuzzleWindow key={winId} obj={obj} stageId={stageId} />
+            return (
+              <WindowFrame key={winId} title={`— ${obj.label}`} windowId={obj.objId} initialPos={{ x: 280, y: 140 }}>
+                <div style={{ padding: 8, background: '#06060f', width: 180 }}>
+                  <img src="/hint_clock.svg" alt="binary hint" style={{ display: 'block', width: '100%' }} />
+                </div>
+              </WindowFrame>
+            )
+          if (stageId === 3 && obj.objId === 'BINARY_01')
+            return <BinaryConverterWindow key={winId} obj={obj} />
           return <PuzzleWindow key={winId} obj={obj} stageId={stageId} />
         }
         if (obj.objType === 'PROGRAM') {
           if (stageId === 2 && obj.objId === 'PROG_01')
             return <MoonWindow key={winId} obj={obj} />
+          if (stageId === 3 && obj.objId === 'PROG_01')
+            return (
+              <WindowFrame key={winId} title="switch" windowId={obj.objId} initialPos={{ x: 300, y: 180 }}>
+                {switchUnlocked ? (
+                  <iframe
+                    src="/toggle_interactive.html"
+                    style={{ display: 'block', width: 200, height: 140, border: 'none' }}
+                    onLoad={(e) => {
+                      e.target.contentWindow.postMessage({ type: 'init-switch', on: switchOn }, '*')
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: 200, height: 140, background: '#06060f',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: "'Malgun Gothic','맑은 고딕',sans-serif",
+                    fontSize: 11, color: '#334455', textAlign: 'center', lineHeight: 2,
+                  }}>
+                    접근 잠금<br />
+                    <span style={{ fontSize: 9, color: '#223' }}>올바른 시간을 입력하시오</span>
+                  </div>
+                )}
+              </WindowFrame>
+            )
+          if (stageId === 3 && obj.objId === 'PROG_02')
+            return (
+              <WindowFrame key={winId} title="toggle" windowId={obj.objId} initialPos={{ x: 460, y: 180 }}>
+                <iframe
+                  src="/time_updown.html"
+                  style={{ display: 'block', width: 260, height: 180, border: 'none' }}
+                  onLoad={(e) => {
+                    if (switchUnlocked)
+                      e.target.contentWindow.postMessage({ type: 'lock-time', h: 5, mt: 0, mo: 0 }, '*')
+                  }}
+                />
+              </WindowFrame>
+            )
           return <ProgramWindow key={winId} obj={obj} stageId={stageId} />
         }
         return null
       })}
 
-      <div className="taskbar">
-        <span className="pixel-font" style={{ color: '#666', fontSize: '6px' }}>
-          STAGE {stageId}
-        </span>
-        <Clock />
-      </div>
+      {stageId === 3 && <Stage3IntroDialog />}
+
     </>
   )
 }

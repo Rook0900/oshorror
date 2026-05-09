@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="480" viewBox="0 0 400 480">
+<rect width="400" height="480" fill="#ffffff" rx="12"/>
+
+<!-- 시계 -->
+<circle cx="200" cy="200" r="150" fill="#f5f5f5" stroke="#cccccc" stroke-width="2"/>
+<circle cx="200" cy="200" r="144" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+
+<!-- 시간 눈금 12개 -->
+<line x1="200" y1="58" x2="200" y2="74" stroke="#888" stroke-width="3"/>
+<line x1="275" y1="77" x2="267" y2="91" stroke="#888" stroke-width="3"/>
+<line x1="323" y1="125" x2="311" y2="133" stroke="#888" stroke-width="3"/>
+<line x1="342" y1="200" x2="326" y2="200" stroke="#888" stroke-width="3"/>
+<line x1="323" y1="275" x2="311" y2="267" stroke="#888" stroke-width="3"/>
+<line x1="275" y1="323" x2="267" y2="309" stroke="#888" stroke-width="3"/>
+<line x1="200" y1="342" x2="200" y2="326" stroke="#888" stroke-width="3"/>
+<line x1="125" y1="323" x2="133" y2="309" stroke="#888" stroke-width="3"/>
+<line x1="77" y1="275" x2="89" y2="267" stroke="#888" stroke-width="3"/>
+<line x1="58" y1="200" x2="74" y2="200" stroke="#888" stroke-width="3"/>
+<line x1="77" y1="125" x2="89" y2="133" stroke="#888" stroke-width="3"/>
+<line x1="125" y1="77" x2="133" y2="91" stroke="#888" stroke-width="3"/>
+
+<!-- 분침 - 12시 방향 (고정) -->
+<line x1="200" y1="200" x2="200" y2="80" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+
+<!-- 중앙 -->
+<circle cx="200" cy="200" r="6" fill="#333"/>
+
+<!-- 토글 힌트 -->
+<rect x="40" y="390" width="320" height="60" fill="#f0f0f0" rx="8"/>
+
+<!-- OFF -->
+<rect x="55" y="405" width="50" height="25" rx="12" fill="#cccccc"/>
+<circle cx="67" cy="417" r="10" fill="#ffffff"/>
+<text x="80" y="440" text-anchor="middle" font-size="10" font-weight="700" fill="#888" font-family="sans-serif">OFF</text>
+
+<!-- ON -->
+<rect x="120" y="405" width="50" height="25" rx="12" fill="#444"/>
+<circle cx="158" cy="417" r="10" fill="#ffffff"/>
+<text x="145" y="440" text-anchor="middle" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">ON</text>
+
+<!-- OFF -->
+<rect x="185" y="405" width="50" height="25" rx="12" fill="#cccccc"/>
+<circle cx="197" cy="417" r="10" fill="#ffffff"/>
+<text x="210" y="440" text-anchor="middle" font-size="10" font-weight="700" fill="#888" font-family="sans-serif">OFF</text>
+
+<!-- ON -->
+<rect x="250" y="405" width="50" height="25" rx="12" fill="#444"/>
+<circle cx="288" cy="417" r="10" fill="#ffffff"/>
+<text x="275" y="440" text-anchor="middle" font-size="10" font-weight="700" fill="#333" font-family="sans-serif">ON</text>
+</svg>

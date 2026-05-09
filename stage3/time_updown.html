@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body{margin:0;background:#fff;display:flex;align-items:center;justify-content:center;height:100vh}
+.wrap{padding:30px;display:flex;flex-direction:column;align-items:center;border-radius:12px}
+.row{display:flex;align-items:center;gap:8px}
+.updown{display:flex;flex-direction:column;align-items:center}
+.btn{width:52px;height:36px;border:none;background:#fff;font-size:18px;cursor:pointer;color:#aaa;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.btn:hover{color:#444}
+.num{font-size:44px;font-weight:700;color:#222;font-family:sans-serif;width:52px;text-align:center;line-height:1.1}
+.colon{font-size:44px;font-weight:700;color:#aaa;font-family:sans-serif;align-self:center;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row">
+    <div class="updown">
+      <button class="btn" onclick="changeH(1)">▲</button>
+      <div class="num" id="hour">1</div>
+      <button class="btn" onclick="changeH(-1)">▼</button>
+    </div>
+    <div class="colon">:</div>
+    <div class="updown">
+      <button class="btn" onclick="changeMT(1)">▲</button>
+      <div class="num" id="min10">0</div>
+      <button class="btn" onclick="changeMT(-1)">▼</button>
+    </div>
+    <div class="updown">
+      <button class="btn" onclick="changeMO(1)">▲</button>
+      <div class="num" id="min01">0</div>
+      <button class="btn" onclick="changeMO(-1)">▼</button>
+    </div>
+  </div>
+</div>
+<script>
+let h=1,mt=0,mo=0;
+function changeH(d){h+=d;if(h<1)h=12;if(h>12)h=1;document.getElementById('hour').textContent=h;}
+function changeMT(d){mt+=d;if(mt<0)mt=5;if(mt>5)mt=0;document.getElementById('min10').textContent=mt;}
+function changeMO(d){mo+=d;if(mo<0)mo=9;if(mo>9)mo=0;document.getElementById('min01').textContent=mo;}
+</script>
+</body>
+</html>

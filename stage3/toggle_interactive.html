@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body{margin:0;background:#fff;display:flex;align-items:center;justify-content:center;height:100vh}
+.wrap{display:flex;align-items:center;justify-content:center;padding:40px;border-radius:10px}
+.toggle{width:60px;height:30px;border-radius:15px;background:#cccccc;position:relative;cursor:pointer;transition:background .3s}
+.toggle.on{background:#444444}
+.toggle .knob{width:24px;height:24px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .3s}
+.toggle.on .knob{left:33px}
+.label{text-align:center;margin-top:8px;font-size:11px;font-weight:700;font-family:sans-serif;color:#666}
+.on-label{color:#222}
+.box{display:flex;flex-direction:column;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="box">
+    <div class="toggle" id="t" onclick="toggle()"><div class="knob"></div></div>
+    <div class="label" id="lbl">OFF</div>
+  </div>
+</div>
+<script>
+let on = false;
+function toggle() {
+  on = !on;
+  document.getElementById('t').classList.toggle('on', on);
+  document.getElementById('lbl').textContent = on ? 'ON' : 'OFF';
+  document.getElementById('lbl').className = 'label' + (on ? ' on-label' : '');
+}
+</script>
+</body>
+</html>

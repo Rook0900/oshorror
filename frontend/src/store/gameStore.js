@@ -105,17 +105,35 @@ export const useGameStore = create((set, get) => ({
   triggerHorror: (type) => set({ horrorActive: true, horrorType: type }),
   clearHorror: () => set({ horrorActive: false, horrorType: null }),
 
+  gameEnded: false,
+  endGame: () => set({ gameEnded: true, openWindows: [] }),
+
+  stage3IntroDismissed: false,
+  dismissStage3Intro: () => set({ stage3IntroDismissed: true }),
+
+  switchOn: true,
+  setSwitchOn: (on) => set({ switchOn: on }),
+
+  switchUnlocked: false,
+  unlockSwitch: () => set({ switchUnlocked: true }),
+
   nextStage: () =>
     set((state) => ({
       currentStage: state.currentStage + 1,
       openWindows: [],
       centralDownloaded: false,
       centralSolved: false,
+      prog02Activated: false,
+      stage3IntroDismissed: false,
     })),
 
   jumpToStage: (stageId) =>
     set({
       currentStage: stageId,
+      gameEnded: false,
+      stage3IntroDismissed: false,
+      switchOn: true,
+      switchUnlocked: false,
       openWindows: [],
       centralDownloaded: false,
       centralSolved: false,
