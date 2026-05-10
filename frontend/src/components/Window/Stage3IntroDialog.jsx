@@ -72,7 +72,7 @@ export default function Stage3UI() {
             }}>
               시뮬레이션 결과 이상 없음.<br />
               모든 업무가 끝났습니다.<br />
-              업무를 종료해주세요.
+              기기를 종료해주세요.
             </div>
 
             <div style={{

@@ -125,6 +125,8 @@ export const useGameStore = create((set, get) => ({
       centralSolved: false,
       prog02Activated: false,
       stage3IntroDismissed: false,
+      finalSequenceActive: false,
+      finalDisplayActive: false,
     })),
 
   jumpToStage: (stageId) =>

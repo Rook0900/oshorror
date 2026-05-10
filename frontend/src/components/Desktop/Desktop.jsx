@@ -17,6 +17,86 @@ import ClockCanvas from './ClockCanvas'
 import { useGameStore } from '../../store/gameStore'
 import { useStage } from '../../hooks/useStage'
 
+function StaticOverlay() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    let raf
+
+    const w = canvas.width
+    const h = canvas.height
+    const total = w * h
+    const SPREAD_MS = 1800  // 전체 화면 덮는 데 걸리는 시간
+
+    // 여러 감염 시작점 — 랜덤 위치에서 동시에 퍼짐
+    const seeds = Array.from({ length: 7 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+    }))
+
+    // 각 픽셀의 "감염 시작 시간" 사전 계산 (0~1)
+    const revealAt = new Float32Array(total)
+    let maxVal = 0
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        let minDist = Infinity
+        for (const s of seeds) {
+          // 가로 방향을 조금 더 빠르게 → 스캔라인 해킹 느낌
+          const dx = (x - s.x) / w * 0.65
+          const dy = (y - s.y) / h
+          const d = Math.sqrt(dx * dx + dy * dy)
+          if (d < minDist) minDist = d
+        }
+        // 노이즈를 섞어 경계선을 불규칙하게
+        const val = minDist + Math.random() * 0.18
+        revealAt[y * w + x] = val
+        if (val > maxVal) maxVal = val
+      }
+    }
+    for (let i = 0; i < total; i++) revealAt[i] /= maxVal
+
+    const startTime = performance.now()
+
+    function draw() {
+      const progress = Math.min(1, (performance.now() - startTime) / SPREAD_MS)
+      const imageData = ctx.createImageData(w, h)
+      const buf = imageData.data
+
+      for (let i = 0; i < total; i++) {
+        if (revealAt[i] <= progress) {
+          const v = (Math.random() * 255) | 0
+          const idx = i << 2
+          buf[idx] = v; buf[idx + 1] = v; buf[idx + 2] = v
+          buf[idx + 3] = ((Math.random() * 180) + 60) | 0
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0)
+      raf = requestAnimationFrame(draw)
+    }
+
+    draw()
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={Math.ceil(window.innerWidth / 3)}
+      height={Math.ceil(window.innerHeight / 3)}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9998,
+        width: '100%', height: '100%',
+        pointerEvents: 'all',
+        imageRendering: 'pixelated',
+        animation: 'staticGlitch 0.07s steps(1) infinite',
+      }}
+    />
+  )
+}
+
 // 스테이지별 오브젝트 배치 (서버 데이터 대체용 fallback)
 const STAGE_FALLBACK = {
   1: {
@@ -78,7 +158,9 @@ export default function Desktop({ stageId }) {
   const setSwitchOn = useGameStore((s) => s.setSwitchOn)
   const switchUnlocked = useGameStore((s) => s.switchUnlocked)
   const unlockSwitch = useGameStore((s) => s.unlockSwitch)
+  const endGame = useGameStore((s) => s.endGame)
   const [clockStopped, setClockStopped] = useState(!switchOn)
+  const [staticActive, setStaticActive] = useState(false)
 
   useEffect(() => {
     const handler = (e) => {
@@ -93,6 +175,16 @@ export default function Desktop({ stageId }) {
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
   }, [])
+  useEffect(() => {
+    if (stageId !== 3 || !switchUnlocked || switchOn) return
+    setStaticActive(true)
+    const t = setTimeout(() => {
+      setStaticActive(false)
+      endGame()
+    }, 2500)
+    return () => clearTimeout(t)
+  }, [switchOn, switchUnlocked, stageId])
+
   const [selectedIcon, setSelectedIcon] = useState(null)
 
   const stage = stageData || STAGE_FALLBACK[stageId]
@@ -129,7 +221,7 @@ export default function Desktop({ stageId }) {
     }
   }, [openWindows, stageId, finalSequenceActive])
 
-  // 두 창 동시 열릴 때(finalSequenceActive) 3초 뒤 커서 고정
+  // 두 창 동시 열릴 때(finalSequenceActive) 5초 뒤 커서 고정
   const mousePos = useRef({ x: 0, y: 0 })
   useEffect(() => {
     const onMove = (e) => { mousePos.current = { x: e.clientX, y: e.clientY } }
@@ -142,7 +234,7 @@ export default function Desktop({ stageId }) {
     const timer = setTimeout(() => {
       document.documentElement.style.cursor = 'none'
       document.body.style.pointerEvents = 'none'
-    }, 3000)
+    }, 5000)
     return () => clearTimeout(timer)
   }, [finalSequenceActive])
 
@@ -171,10 +263,13 @@ export default function Desktop({ stageId }) {
 
   return (
     <>
+      {staticActive && <StaticOverlay />}
+
 {/* 검은 오버레이 (달 변환 시작 후) */}
       {finalDisplayActive && (
         <div style={{
           position: 'fixed', inset: 0, background: '#000', zIndex: 950, pointerEvents: 'none',
+          animation: 'fadeBlackout 2s forwards',
         }} />
       )}
 

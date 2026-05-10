@@ -28,7 +28,17 @@ function toggle() {
   document.getElementById('t').classList.toggle('on', on);
   document.getElementById('lbl').textContent = on ? 'ON' : 'OFF';
   document.getElementById('lbl').className = 'label' + (on ? ' on-label' : '');
+  window.parent.postMessage({ type: 'clock-toggle', on }, '*');
 }
+
+window.addEventListener('message', (e) => {
+  if (e.data?.type === 'init-switch') {
+    on = !!e.data.on;
+    document.getElementById('t').classList.toggle('on', on);
+    document.getElementById('lbl').textContent = on ? 'ON' : 'OFF';
+    document.getElementById('lbl').className = 'label' + (on ? ' on-label' : '');
+  }
+});
 </script>
 </body>
 </html>

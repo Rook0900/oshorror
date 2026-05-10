@@ -173,7 +173,7 @@ export default function MoonWindow({ obj }) {
     if (!finalSequenceActive) return
 
     const timeouts = []
-    const t5 = setTimeout(() => {
+    const t5 = setTimeout(() => {  // 5초(커서 고정) + 5초 = 10초 후 검은 화면
       activateFinalDisplay()
       let step = 0
       const runStep = () => {
@@ -193,7 +193,7 @@ export default function MoonWindow({ obj }) {
         timeouts.push(t)
       }
       runStep()
-    }, 5000)
+    }, 10000)
     timeouts.push(t5)
 
     return () => timeouts.forEach(clearTimeout)

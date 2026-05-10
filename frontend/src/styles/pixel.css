@@ -377,6 +377,18 @@ body {
   font-size: 10px;
 }
 
+/* 지지직 스태틱 노이즈 */
+@keyframes staticGlitch {
+  0%   { filter: none; }
+  14%  { filter: hue-rotate(90deg) saturate(6) contrast(2); }
+  28%  { filter: invert(0.25) brightness(1.6); }
+  42%  { filter: hue-rotate(200deg) saturate(8); }
+  57%  { filter: contrast(5) brightness(0.4); }
+  71%  { filter: hue-rotate(300deg) saturate(4) invert(0.1); }
+  85%  { filter: brightness(2) contrast(3); }
+  100% { filter: none; }
+}
+
 /* 스테이지 전환 */
 .stage-transition {
   position: fixed;
